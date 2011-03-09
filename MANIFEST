@@ -1,0 +1,11 @@
+bin/yarc
+Build.PL
+lib/RESTAS/Yarc.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
+t/00-load.t
+t/data/welcome
+t/pod.t
+t/write/01-round_trip.t

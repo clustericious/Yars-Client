@@ -1,0 +1,31 @@
+RESTAS-Yarc (Yet Another RESTAS Client)
+
+Lightweight alternative to RESTAS-Client that uses the Clustericious framework.
+
+
+Install the package:
+
+	perl Build.PL
+	./Build
+	./Build test
+	./Build install
+
+
+
+Create a config file (~/etc/RESTAS.conf) that looks something like this:
+
+---
+url : http://localhost:10001
+port : 10001
+host : localhost
+ssh_tunnel :
+  remote_host : omidev.gsfc.nasa.gov
+  server_host : devarch11
+  server_port : '8300'
+
+
+
+SEE ALSO
+
+Clustericious::Client
+RESTAS-Client

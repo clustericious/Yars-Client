@@ -1,0 +1,62 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use File::Spec;
+use File::Basename 'dirname';
+
+
+use lib join '/', File::Spec->splitdir(dirname(__FILE__)), 'lib';
+use lib join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib';
+
+use RESTAS::Yarc;
+use Clustericious::Client::Command;
+use Log::Log4perl::CommandLine (':all', ':loginit' => <<"EOT");
+           log4perl.rootLogger = WARN, Screen
+           log4perl.appender.Screen = Log::Log4perl::Appender::ScreenColoredLevels
+           log4perl.appender.Screen.layout = Log::Log4perl::Layout::PatternLayout
+           log4perl.appender.Screen.layout.ConversionPattern = [%-5p] %d %F{1} (%L) %m %n
+EOT
+
+
+Clustericious::Client::Command->run(RESTAS::Yarc->new, @ARGV);
+
+
+
+__END__
+
+=head1 NAME
+
+B<yarc> - Upload, download, and delete files to RESTAS.
+
+
+=head1 SYNOPSIS
+
+B<yarc> upload FILE
+
+B<yarc> download FILE MD5
+
+B<yarc> remove FILE MD5
+
+
+
+=head1 DESCRIPTION
+
+Command-line interface to RESTAS::Yarc.  This is a lightweight alternative to RESTAS-Client that uses the Clustericious framework.
+
+
+=head1 AUTHORS
+
+Marty Brandon, C<< <mbrandon at sesda2.com> >>
+
+=head1 SEE ALSO
+
+L<RESTAS::Yarc>
+
+L<RESTAS::Client>
+
+L<Clustericious::Client>
+
+=cut
+
+
