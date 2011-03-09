@@ -14,7 +14,7 @@ use File::Spec;
 use Log::Log4perl qw(:easy);
 use Pod::Usage;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 route 'download_file' => 'GET', '/file';
 
@@ -36,7 +36,10 @@ sub download {
     INFO("downloading $filename $md5");
     my $content = $self->download_file( $filename, $md5 );
 
-    return 'unable to download file' if !$content;
+    if ( !$content ) {
+        LOGWARN 'unable to download file';
+        return undef;
+    }
 
     open( my $OUTFILE, '>', $filename )
       || LOGDIE "Could not write to $filename";
@@ -81,10 +84,10 @@ sub upload {
     unless ( $code == 201 or $code == 409 ) {
 
         # Die unless the file was uploaded or found to already exist
-        LOGDIE "error uploading app - unable to upload files";
+        LOGWARN "error uploading file - $code : $message";
     }
 
-    return 'file uploaded';
+    return "$code : $message";
 }
 
 1;

@@ -23,7 +23,7 @@ if ( $server =~ /ops/i ) {
     BAIL_OUT "Server contains /ops/.  Not running put tests";
 }
 
-like( $r->upload( $Bin . '/../data/welcome' ), qr/uploaded/, 'upload' );
+like( $r->upload( $Bin . '/../data/welcome' ), qr/201/, 'upload' );
 
 my $saved_dir = getcwd;
 my $temp_dir = tempdir( CLEANUP => 1 );
