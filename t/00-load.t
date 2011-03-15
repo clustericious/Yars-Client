@@ -6,4 +6,4 @@ BEGIN {
     use_ok( 'RESTAS::Yarc' );
 }
 
-diag( "Testing RESTAS::Yarc $RESTAS::Yarc, Perl $], $^X" );
+diag( "Testing RESTAS::Yarc, Perl $], $^X" );
