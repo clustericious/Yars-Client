@@ -115,7 +115,7 @@ sub upload {
     my $md5      = b($content)->md5_sum->to_string;
 
     my $url = $self->_get_url;
-    $url->path("/file/$basename/$md5");
+    $url->path("/file/$basename");
     TRACE( "RESTAS URL: ", $url->to_string );
 
     # Put the file
@@ -139,7 +139,7 @@ __END__
 
 =head1 filename
 
-RESTAS::Yarc - RESTAS Yarc (Yet Another RESTAS Client)
+RESTAS::Yarc (Yet Another RESTAS Client)
 
 =head1 SYNOPSIS
 
