@@ -1,7 +1,7 @@
 #!perl
 
 use Test::More tests => 4;
-use RESTAS::Yarc;
+use Yars::Client;
 use Log::Log4perl;
 use Mojo::ByteStream 'b';
 use Mojo::Asset::File;
@@ -16,9 +16,9 @@ use strict;
 
 Log::Log4perl->easy_init( level => "TRACE" );
 
-diag "Contacting RESTAS server";
+diag "Contacting Yars";
 
-my $r = RESTAS::Yarc->new;
+my $r = Yars::Client->new;
 
 my $server = $r->server_url;
 

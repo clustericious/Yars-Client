@@ -1,6 +1,6 @@
-RESTAS-Yarc (Yet Another RESTAS Client)
+Yars Client (Yet Another RESTAS Server Client)
 
-Lightweight alternative to RESTAS-Client that uses the Clustericious framework.
+Lightweight alternative to RESTAS that uses the Clustericious framework.
 
 
 Install the package:
@@ -12,7 +12,7 @@ Install the package:
 
 
 
-Create a config file (~/etc/RESTAS.conf) that looks something like this:
+Create a config file (~/etc/Yars.conf) that looks something like this:
 
 ---
 url : http://localhost:10001
@@ -28,4 +28,4 @@ ssh_tunnel :
 SEE ALSO
 
 Clustericious::Client
-RESTAS-Client
+Yars-Client

@@ -1,5 +1,5 @@
 ---
-abstract: 'Yet Another RESTAS Client'
+abstract: 'Yars Client'
 author:
   - 'Marty Brandon<mbrandon@sesda2.com>'
 build_requires:
@@ -11,10 +11,10 @@ license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
-name: RESTAS-Yarc
+name: Yars-Client
 provides:
-  RESTAS::Yarc:
-    file: lib/RESTAS/Yarc.pm
+  Yars::Client:
+    file: lib/Yars/Client.pm
     version: 0.05
 requires:
   Clustericious::Client: 0.07

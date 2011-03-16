@@ -3,7 +3,7 @@
 use Test::More tests => 1;
 
 BEGIN {
-    use_ok( 'RESTAS::Yarc' );
+    use_ok( 'Yars::Client' );
 }
 
-diag( "Testing RESTAS::Yarc, Perl $], $^X" );
+diag( "Testing Yars::Client, Perl $], $^X" );

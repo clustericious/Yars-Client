@@ -45,7 +45,7 @@
 \bbuild.com$
 
 # Avoid archives of this distribution
-\bRESTAS-Yarc-[\d\.\_]+
+\bYars-Client-[\d\.\_]+
 ^MYMETA.yml$
 
 # Avoid regression testing files (may add these back later)

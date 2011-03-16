@@ -2,8 +2,8 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'NAME' => 'RESTAS::Yarc',
-          'VERSION_FROM' => 'lib/RESTAS/Yarc.pm',
+          'NAME' => 'Yars::Client',
+          'VERSION_FROM' => 'lib/Yars/Client.pm',
           'PREREQ_PM' => {
                            'Clustericious::Client' => '0.07',
                            'Clustericious::Config' => '0.04',
@@ -11,7 +11,7 @@ WriteMakefile
                          },
           'INSTALLDIRS' => 'site',
           'EXE_FILES' => [
-                           'bin/yarc'
+                           'bin/yarsclient'
                          ],
           'PL_FILES' => {}
         )

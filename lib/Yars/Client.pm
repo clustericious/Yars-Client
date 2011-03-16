@@ -1,4 +1,4 @@
-package RESTAS::Yarc;
+package Yars::Client;
 
 use strict;
 use warnings;
@@ -21,7 +21,7 @@ sub _get_url {
 
     # Helper to create the Mojo URL object.
 
-    my $config = Clustericious::Config->new('RESTAS');
+    my $config = Clustericious::Config->new('Yars');
     my $url =
       Mojo::URL->new->scheme("http")->host( $config->host )
       ->port( $config->port );
@@ -48,7 +48,7 @@ sub download {
     TRACE("downloading $filename $md5");
     my $url = $self->_get_url;
     $url->path("/file/$filename/$md5");
-    TRACE( "RESTAS URL: ", $url->to_string );
+    TRACE( "Yars URL: ", $url->to_string );
 
     # Get the file content
     my $res     = $self->client->get( $url )->res;
@@ -82,7 +82,7 @@ sub remove {
 
     my $url = $self->_get_url;
     $url->path("/file/$filename/$md5");
-    TRACE( "RESTAS URL: ", $url->to_string );
+    TRACE( "Yars URL: ", $url->to_string );
 
     # Delete the file
     my $res     = $self->client->delete( $url )->res;
@@ -116,7 +116,7 @@ sub upload {
 
     my $url = $self->_get_url;
     $url->path("/file/$basename");
-    TRACE( "RESTAS URL: ", $url->to_string );
+    TRACE( "Yars URL: ", $url->to_string );
 
     # Put the file
     my $res     = $self->client->put( $url => $content )->res;
@@ -139,11 +139,11 @@ __END__
 
 =head1 filename
 
-RESTAS::Yarc (Yet Another RESTAS Client)
+Yars::Client (Yet Another RESTAS Client)
 
 =head1 SYNOPSIS
 
- my $r = RESTAS::Yarc->new;
+ my $r = Yars::Client->new;
 
  # Put a file
  $r->upload($filename);
@@ -157,11 +157,11 @@ RESTAS::Yarc (Yet Another RESTAS Client)
 
 =head1 DESCRIPTION
 
-Perl client for the RESTAS API.  Alternative to RESTAS-Client that uses the Clustericious framework.
+Client for Yars.  Yars and Yars-Client are lightweight alternative to RESTAS that can be used during development.
 
 
 =head1 SEE ALSO
 
- yarc (executable that comes with RESTAS::Yarc)
+ yarsclient (executable that comes with Yars::Client)
  RESTAS-Client
  Clustericious::Client

@@ -3,11 +3,11 @@ use warnings;
 use Module::Build;
 
 my $builder = Module::Build->new(
-    module_name         => 'RESTAS::Yarc',
+    module_name         => 'Yars::Client',
     license             => 'perl',
     dist_author         => q{Marty Brandon<mbrandon@sesda2.com>},
-    dist_version_from   => 'lib/RESTAS/Yarc.pm',
-    dist_abstract       => 'Yet Another RESTAS Client',
+    dist_version_from   => 'lib/Yars/Client.pm',
+    dist_abstract       => 'Yars Client',
     requires => {
         'Clustericious::Client' => '0.07',
         'Clustericious::Config' => '0.04',
@@ -15,7 +15,7 @@ my $builder = Module::Build->new(
     build_requires => {
         'Test::More' => 0,
     },
-    add_to_cleanup      => [ 'RESTAS-Yarc-*' ],
+    add_to_cleanup      => [ 'Yars-Client-*' ],
     create_makefile_pl => 'traditional',
 );
 
