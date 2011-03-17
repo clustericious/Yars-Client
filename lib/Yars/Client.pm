@@ -7,7 +7,6 @@ use Clustericious::Client;
 use Clustericious::Config;
 use Mojo::Asset::File;
 use Mojo::ByteStream 'b';
-use Mojo::Client;
 use Mojo::URL;
 use File::Basename;
 use File::Spec;
