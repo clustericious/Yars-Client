@@ -28,8 +28,8 @@ if ( $server =~ /ops/i ) {
 
 like( $r->upload( $Bin . '/../data/welcome' ), qr/^201/, 'upload' );
 
-my $temp_dir = tempdir( );
 
+my $temp_dir = tempdir( );
 like( $r->download( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3', $temp_dir ),
     qr/^200/, 'download' );
 

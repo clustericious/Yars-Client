@@ -114,7 +114,7 @@ sub upload {
     my $md5      = b($content)->md5_sum->to_string;
 
     my $url = $self->_get_url;
-    $url->path("/file/$basename");
+    $url->path("/file/$basename/$md5");
     TRACE( "Yars URL: ", $url->to_string );
 
     # Put the file
