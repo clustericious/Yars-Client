@@ -13,7 +13,7 @@ use File::Spec;
 use Log::Log4perl qw(:easy);
 use Pod::Usage;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 
 sub _get_url {
