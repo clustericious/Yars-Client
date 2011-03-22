@@ -7,13 +7,27 @@ use Clustericious::Client;
 use Clustericious::Config;
 use Mojo::Asset::File;
 use Mojo::ByteStream 'b';
+use Digest::MD5 qw(md5_hex);
 use Mojo::URL;
+use Mojo::UserAgent;
 use File::Basename;
 use File::Spec;
 use Log::Log4perl qw(:easy);
 use Pod::Usage;
 
 our $VERSION = '0.08';
+
+# max downloads of 1 GB
+$ENV{MOJO_MAX_MESSAGE_SIZE} = 1073741824;
+
+Clustericious::Client::Meta->add_route( "Yars::Client",
+    upload => "<filename> [md5]" );
+Clustericious::Client::Meta->add_route( "Yars::Client",
+    download => "<filename> [md5]" );
+Clustericious::Client::Meta->add_route( "Yars::Client",
+    remove => "<filename> [md5]" );
+
+route 'welcome' => 'GET', '/';
 
 
 sub _get_url {
@@ -25,9 +39,8 @@ sub _get_url {
       Mojo::URL->new->scheme("http")->host( $config->host )
       ->port( $config->port );
 
-   return $url;
+    return $url;
 }
-
 
 sub download {
 
@@ -50,19 +63,17 @@ sub download {
     TRACE( "Yars URL: ", $url->to_string );
 
     # Get the file content
-    my $res     = $self->client->get( $url )->res;
-    my $code    = $res->code;
-    my $message = $res->message;
+    my $ua      = Mojo::UserAgent->new( max_redirects => 5 );
+    my $tx      = $ua->get( $url->to_string );
+    my $code    = $tx->res->code;
+    my $message = $tx->res->message;
+
     TRACE("$code:$message");
 
     LOGWARN 'unable to download file' unless $code == 200;
 
     my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
-    open( my $OUTFILE, '>', $out_file )
-      || LOGDIE "Could not write to $out_file";
-
-
-    print $OUTFILE $res->body();
+    $tx->res->content->asset->move_to($out_file);
 
     return "$code:$message";
 }
@@ -78,15 +89,16 @@ sub remove {
         -exitval => 1
     ) unless $filename && $md5;
 
-
     my $url = $self->_get_url;
     $url->path("/file/$filename/$md5");
     TRACE( "Yars URL: ", $url->to_string );
 
     # Delete the file
-    my $res     = $self->client->delete( $url )->res;
-    my $code    = $res->code;
-    my $message = $res->message;
+    my $ua      = Mojo::UserAgent->new( max_redirects => 5 );
+    my $tx      = $ua->delete($url);
+    my $code    = $tx->res->code;
+    my $message = $tx->res->message;
+
     TRACE("$code : $message");
 
     LOGWARN "error deleting file - $code:$message" unless $code == 200;
@@ -111,16 +123,18 @@ sub upload {
     my $asset    = Mojo::Asset::File->new( path => $filename );
     my $basename = basename($filename);
     my $content  = $asset->slurp;
-    my $md5      = b($content)->md5_sum->to_string;
+    my $md5      = md5_hex($content);
 
     my $url = $self->_get_url;
     $url->path("/file/$basename/$md5");
     TRACE( "Yars URL: ", $url->to_string );
 
     # Put the file
-    my $res     = $self->client->put( $url => $content )->res;
-    my $code    = $res->code;
-    my $message = $res->message;
+    my $ua = Mojo::UserAgent->new( max_redirects => 5 );
+    my $tx = $ua->put( $url => $content );
+    my $code    = $tx->res->code    || 400;
+    my $message = $tx->res->message || 'upload error';
+
     TRACE("$code : $message");
 
     unless ( $code == 201 or $code == 409 ) {
