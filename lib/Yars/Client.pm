@@ -23,7 +23,7 @@ $ENV{MOJO_MAX_MESSAGE_SIZE} = 1073741824;
 Clustericious::Client::Meta->add_route( "Yars::Client",
     upload => "<filename> [md5]" );
 Clustericious::Client::Meta->add_route( "Yars::Client",
-    download => "<filename> <md5>" );
+    download => "<filename> <md5> [dir]" );
 Clustericious::Client::Meta->add_route( "Yars::Client",
     remove => "<filename> <md5>" );
 
@@ -163,6 +163,8 @@ Yars::Client (Yet Another RESTAS Client)
 
  # Get a file 
  $r->download($filename, $md5);
+ $r->download($filename, $md5, /tmp);   # download it to the /tmp directory
+    
 
  # Delete a file
  $r->remove($filename, $md5);
