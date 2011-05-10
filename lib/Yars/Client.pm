@@ -23,9 +23,9 @@ $ENV{MOJO_MAX_MESSAGE_SIZE} = 1073741824;
 Clustericious::Client::Meta->add_route( "Yars::Client",
     upload => "<filename> [md5]" );
 Clustericious::Client::Meta->add_route( "Yars::Client",
-    download => "<filename> [md5]" );
+    download => "<filename> <md5>" );
 Clustericious::Client::Meta->add_route( "Yars::Client",
-    remove => "<filename> [md5]" );
+    remove => "<filename> <md5>" );
 
 route 'welcome' => 'GET', '/';
 
@@ -150,7 +150,7 @@ sub upload {
 
 __END__
 
-=head1 filename
+=head1 NAME
 
 Yars::Client (Yet Another RESTAS Client)
 
