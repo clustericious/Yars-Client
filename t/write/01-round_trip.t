@@ -1,6 +1,6 @@
 #!perl
 
-use Test::More tests => 4;
+use Test::More;
 use Yars::Client;
 use Log::Log4perl;
 use Mojo::ByteStream 'b';
@@ -28,6 +28,8 @@ if ( $server =~ /ops/i ) {
 
 like( $r->upload( $Bin . '/../data/welcome' ), qr/^201/, 'upload' );
 
+like( $r->content('welcome', '0bb3c30dc72e63881db5005f1aa19ac3') =~ qr/^welcome/, 'content' );
+
 
 my $temp_dir = tempdir( );
 like( $r->download( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3', $temp_dir ),
@@ -44,5 +46,7 @@ like( $r->remove( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3' ),
     qr/^200/, 'remove' );
 
 remove_tree($temp_dir);
+
+done_testing();
 
 1;
