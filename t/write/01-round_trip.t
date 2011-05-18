@@ -26,15 +26,18 @@ if ( $server =~ /ops/i ) {
     BAIL_OUT "Server contains /ops/.  Not running put tests";
 }
 
-like( $r->upload( $Bin . '/../data/welcome' ), qr/^201/, 'upload' );
+my $tx;
+ok( $tx = $r->upload( $Bin . '/../data/welcome' ), "uploaded a file" );
+ok($tx->success, "tx was successful");
+is $tx->res->code, 201, "status is 201 (created)";
 
 like( $r->content('welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), qr/^welcome/, 'content' );
 
 
 my $temp_dir = tempdir( );
-like( $r->download( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3', $temp_dir ),
-    qr/^200/, 'download' );
-
+ok( $tx = $r->download( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3', $temp_dir ), "download");
+ok( $tx->success, "download successful" );
+is $tx->res->code, 200, "200 status code";
 
 my $asset   = Mojo::Asset::File->new( path => "$temp_dir/welcome" );
 my $content = $asset->slurp;
@@ -42,8 +45,9 @@ my $md5     = b($content)->md5_sum->to_string;
 
 ok( $md5 eq '0bb3c30dc72e63881db5005f1aa19ac3', 'content' );
 
-like( $r->remove( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3' ),
-    qr/^200/, 'remove' );
+ok( $tx = $r->remove( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), "called remove");
+ok($tx->success, "remove was successful");
+is ($tx->res->code, 200, 'status was 200');
 
 remove_tree($temp_dir);
 

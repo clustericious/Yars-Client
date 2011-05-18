@@ -64,14 +64,9 @@ sub content {
     TRACE( "Yars URL: ", $url->to_string );
 
     # Get the file content
-    my $ua      = Mojo::UserAgent->new( max_redirects => 5 );
-    my $tx      = $ua->get( $url->to_string );
-    my $code    = $tx->res->code;
-    my $message = $tx->res->message;
+    my $tx      = $self->client->get( $url->to_string );
 
-    TRACE("$code:$message");
-
-    LOGWARN 'unable to download file' unless $code == 200;
+    LOGWARN 'unable to download file' unless $tx->success && $tx->res->code == 200;
 
     return $tx->res->body;
 }
@@ -92,24 +87,18 @@ sub download {
     }
 
     TRACE("downloading $filename $md5");
-    my $url = $self->_get_url;
-    $url->path("/file/$filename/$md5");
+    my $url = $self->_get_url->path("/file/$filename/$md5");
     TRACE( "Yars URL: ", $url->to_string );
 
     # Get the file content
-    my $ua      = Mojo::UserAgent->new( max_redirects => 5 );
-    my $tx      = $ua->get( $url->to_string );
-    my $code    = $tx->res->code;
-    my $message = $tx->res->message;
+    my $tx = $self->client->get( $url->to_string );
 
-    TRACE("$code:$message");
-
-    LOGWARN 'unable to download file' unless $code == 200;
+    LOGWARN 'unable to download file' unless $tx->res->code == 200;
 
     my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
     $tx->res->content->asset->move_to($out_file);
 
-    return "$code:$message";
+    return $tx;
 }
 
 sub remove {
@@ -128,21 +117,13 @@ sub remove {
     TRACE( "Yars URL: ", $url->to_string );
 
     # Delete the file
-    my $ua      = Mojo::UserAgent->new( max_redirects => 5 );
-    my $tx      = $ua->delete($url);
-    my $code    = $tx->res->code;
-    my $message = $tx->res->message;
-
-    TRACE("$code : $message");
-
-    LOGWARN "error deleting file - $code:$message" unless $code == 200;
-
-    return "$code:$message";
+    return $self->client->delete($url);
 }
 
 sub upload {
 
     # Uploads a file
+    # Returns true on success, false on failure.
 
     my ( $self, $filename ) = @_;
 
@@ -159,25 +140,11 @@ sub upload {
     my $content  = $asset->slurp;
     my $md5      = md5_hex($content);
 
-    my $url = $self->_get_url;
-    $url->path("/file/$basename/$md5");
+    my $url = $self->_get_url->path("/file/$basename/$md5");
     TRACE( "Yars URL: ", $url->to_string );
 
-    # Put the file
-    my $ua = Mojo::UserAgent->new( max_redirects => 5 );
-    my $tx = $ua->put( $url => $content );
-    my $code    = $tx->res->code    || 400;
-    my $message = $tx->res->message || 'upload error';
-
-    TRACE("$code : $message");
-
-    unless ( $code == 201 or $code == 409 ) {
-
-        # Warn unless the file was uploaded or found to already exist
-        LOGWARN "error uploading file - $code:$message";
-    }
-
-    return "$code:$message";
+    # Put the transaction
+    return $self->client->put( $url => $content );
 }
 
 1;
@@ -195,10 +162,10 @@ Yars::Client (Yet Another RESTAS Client)
  # Put a file
  $r->upload($filename);
 
- # Get a file 
+ # Get a file
  $r->download($filename, $md5);
  $r->download($filename, $md5, /tmp);   # download it to the /tmp directory
-    
+
 
  # Delete a file
  $r->remove($filename, $md5);
@@ -208,9 +175,13 @@ Yars::Client (Yet Another RESTAS Client)
 
 Client for Yars.  Yars and Yars-Client are lightweight alternative to RESTAS that can be used during development.
 
+Each of the above methods returns a Mojo::Transaction::HTTP object.
+
 
 =head1 SEE ALSO
 
  yarsclient (executable that comes with Yars::Client)
  RESTAS-Client
  Clustericious::Client
+ Mojo::Transaction::HTTP
+ Mojo::Transaction
