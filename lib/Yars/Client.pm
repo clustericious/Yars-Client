@@ -7,7 +7,6 @@ use Clustericious::Client;
 use Clustericious::Config;
 use Mojo::Asset::File;
 use Mojo::ByteStream 'b';
-use Digest::MD5 qw(md5_hex);
 use Mojo::URL;
 use Mojo::UserAgent;
 use File::Basename;
@@ -93,7 +92,7 @@ sub download {
     # Get the file content
     my $tx = $self->client->get( $url->to_string );
 
-    LOGWARN 'unable to download file' unless $tx->res->code == 200;
+    return $tx unless $tx->success;
 
     my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
     $tx->res->content->asset->move_to($out_file);
@@ -138,12 +137,12 @@ sub upload {
     my $asset    = Mojo::Asset::File->new( path => $filename );
     my $basename = basename($filename);
     my $content  = $asset->slurp;
-    my $md5      = md5_hex($content);
+    my $md5      = b($content)->md5_sum;
 
     my $url = $self->_get_url->path("/file/$basename/$md5");
     TRACE( "Yars URL: ", $url->to_string );
 
-    # Put the transaction
+    # Return the transaction
     return $self->client->put( $url => $content );
 }
 
