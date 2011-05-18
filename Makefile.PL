@@ -5,7 +5,7 @@ WriteMakefile
           'NAME' => 'Yars::Client',
           'VERSION_FROM' => 'lib/Yars/Client.pm',
           'PREREQ_PM' => {
-                           'Clustericious::Client' => '0.07',
+                           'Clustericious::Client' => '0.19',
                            'Clustericious::Config' => '0.04',
                            'Test::More' => 0
                          },
