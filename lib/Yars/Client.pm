@@ -38,9 +38,7 @@ sub _get_url {
     # Helper to create the Mojo URL object.
 
     my $config = Clustericious::Config->new('Yars');
-    my $url =
-      Mojo::URL->new->scheme("http")->host( $config->host )
-      ->port( $config->port );
+    my $url = Mojo::URL->new( $config->url );
 
     return $url;
 }
