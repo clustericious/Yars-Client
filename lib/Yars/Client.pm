@@ -48,8 +48,6 @@ sub content {
 
     my ( $self, $filename, $md5 ) = @_;
 
-    # $dest_dir is an optional destination argument
-
     unless ( $filename and $md5 ) {
         pod2usage(
             -msg     => "filename and md5 needed for content\n",
@@ -122,7 +120,6 @@ sub remove {
 sub upload {
 
     # Uploads a file
-    # Returns true on success, false on failure.
 
     my ( $self, $filename ) = @_;
 
@@ -172,7 +169,7 @@ Yars::Client (Yet Another RESTAS Client)
 
 =head1 DESCRIPTION
 
-Client for Yars.  Yars and Yars-Client are lightweight alternative to RESTAS that can be used during development.
+Client for Yars.  Yars and Yars-Client are lightweight alternatives to RESTAS that can be used during development.
 
 Each of the above methods returns a Mojo::Transaction::HTTP object.
 
