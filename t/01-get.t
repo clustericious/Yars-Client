@@ -1,6 +1,6 @@
 #!perl
 
-use Test::More $ENV{YC_LIVE_TESTS} ? "no_plan" : (skip_all => "Set RC_LIVE_TESTS to use restmd configuration ");
+use Test::More $ENV{YC_LIVE_TESTS} ? "no_plan" : (skip_all => "Set YC_LIVE_TESTS to use Yars configuration ");
 use Yars::Client;
 use Log::Log4perl;
 
