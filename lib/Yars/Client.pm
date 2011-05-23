@@ -127,7 +127,6 @@ sub upload {
         -msg     => "file needed for upload",
         -exitval => 1
     ) unless $filename;
-
     -r $filename or LOGDIE "Could not read " . File::Spec->rel2abs($filename);
 
     # Read the file
@@ -140,7 +139,22 @@ sub upload {
     TRACE( "Yars URL: ", $url->to_string );
 
     # Return the transaction
-    return $self->client->put( $url => $content );
+    my $tx = $self->client->put( $url => $content );
+
+    if ( my $res = $tx->success ) {
+        print $res->code," ",$res->default_message,"\n";
+    }
+    else {
+        my ( $message, $code ) = $res->error;
+        if ($code) {
+            print "$code $message response.\n";
+        }
+        else {
+            print "Connection error: $message\n";
+        }
+    }
+
+    return $tx;
 }
 
 1;

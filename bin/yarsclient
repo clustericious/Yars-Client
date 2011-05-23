@@ -19,7 +19,16 @@ use Log::Log4perl::CommandLine (':all', ':loginit' => <<"EOT");
 EOT
 
 
-Clustericious::Client::Command->run(Yars::Client->new, @ARGV);
+if ($ARGV[0] eq 'upload') {
+    # Clustericious-Client attempts to load file arguments as YAML by default, but
+    # not all files to upload are YAML.
+    shift @ARGV;
+    my $yc = Yars::Client->new;
+    $yc->upload(@ARGV);
+} 
+else {
+    Clustericious::Client::Command->run(Yars::Client->new, @ARGV);
+}
 
 
 
