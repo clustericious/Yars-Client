@@ -5,6 +5,8 @@ use Yars::Client;
 use Log::Log4perl;
 
 use strict;
+use warnings;
+
 
 Log::Log4perl->easy_init(level => "WARN");
 

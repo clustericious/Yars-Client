@@ -17,7 +17,7 @@ provides:
     file: lib/Yars/Client.pm
     version: 0.16
 requires:
-  Clustericious::Client: 0.19
+  Clustericious::Client: 0.21
   Clustericious::Config: 0.04
 resources:
   license: http://dev.perl.org/licenses/

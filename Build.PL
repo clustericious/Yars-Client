@@ -9,7 +9,7 @@ my $builder = Module::Build->new(
     dist_version_from   => 'lib/Yars/Client.pm',
     dist_abstract       => 'Yars Client',
     requires => {
-        'Clustericious::Client' => '0.19',
+        'Clustericious::Client' => '0.21',
         'Clustericious::Config' => '0.04',
     },
     build_requires => {

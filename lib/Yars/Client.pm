@@ -145,7 +145,7 @@ sub upload {
         print $res->code," ",$res->default_message,"\n";
     }
     else {
-        my ( $message, $code ) = $res->error;
+        my ( $message, $code ) = $tx->error;
         if ($code) {
             print "$code $message response.\n";
         }
@@ -183,9 +183,7 @@ Yars::Client (Yet Another RESTAS Client)
 
 =head1 DESCRIPTION
 
-Client for Yars.  Yars and Yars-Client are lightweight alternatives to RESTAS that can be used during development.
-
-Each of the above methods returns a Mojo::Transaction::HTTP object.
+Client for Yars.  Yars and Yars-Client are lightweight alternatives to RESTAS that can be used during development.  Yars-Client is also compatible with RESTAS-Server.  Each of the above methods returns a Mojo::Transaction::HTTP object.
 
 
 =head1 SEE ALSO
