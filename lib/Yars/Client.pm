@@ -14,7 +14,7 @@ use File::Spec;
 use Log::Log4perl qw(:easy);
 use Pod::Usage;
 
-our $VERSION = '0.18';
+our $VERSION = '0.19';
 
 # max downloads of 1 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 1073741824;
