@@ -42,11 +42,11 @@ sub _get_url {
     return $url;
 }
 
-sub content {
+sub retrieve {
 
-    # Like download, but returns the file's content w/o writing to disk.
+    # Like download, but w/o writing to disk.  Returns the transaction.
 
-    my ( $self, $filename, $md5 ) = @_;
+    my ( $self, $filename, $md5 ) = @_;  # dest_dir is optional
 
     unless ( $filename and $md5 ) {
         pod2usage(
@@ -55,40 +55,25 @@ sub content {
         );
     }
 
-    TRACE("content for $filename $md5");
-    my $url = $self->_get_url;
-    $url->path("/file/$filename/$md5");
+    TRACE("retrieving $filename $md5");
+    my $url = $self->_get_url->path("/file/$filename/$md5");
     TRACE( "Yars URL: ", $url->to_string );
 
-    # Get the file content
+    # Get the file
     my $tx      = $self->client->get( $url->to_string );
 
-    LOGWARN 'unable to download file' unless $tx->success && $tx->res->code == 200;
+    INFO 'unable to retrieve file' unless $tx->success && $tx->res->code == 200;
 
-    return $tx->res->body;
+    return $tx;
 }
 
 sub download {
 
-    # Retrieves a file and saves it.
+    # Downloads a file and saves it to disk.  Returns the transaction.
 
     my ( $self, $filename, $md5, $dest_dir ) = @_;
 
-    # $dest_dir is an optional destination argument
-
-    unless ( $filename and $md5 ) {
-        pod2usage(
-            -msg     => "filename and md5 needed for download\n",
-            -exitval => 1
-        );
-    }
-
-    TRACE("downloading $filename $md5");
-    my $url = $self->_get_url->path("/file/$filename/$md5");
-    TRACE( "Yars URL: ", $url->to_string );
-
-    # Get the file content
-    my $tx = $self->client->get( $url->to_string );
+    my $tx = $self->retrieve($filename, $md5);
 
     return $tx unless $tx->success;
 

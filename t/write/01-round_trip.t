@@ -31,7 +31,10 @@ ok( $tx = $r->upload( $Bin . '/../data/welcome' ), "uploaded a file" );
 ok($tx->success, "tx was successful");
 is $tx->res->code, 201, "status is 201 (created)";
 
-like( $r->content('welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), qr/^welcome/, 'content' );
+like( $r->retrieve('welcome', 
+    '0bb3c30dc72e63881db5005f1aa19ac3')->res->body, qr/^welcome/, 'retrieve' );
+$tx = $r->retrieve('Fred','yabbadabba'); 
+ok($tx->res->code == 404, 'retrieve - not found');
 
 
 my $temp_dir = tempdir( );
