@@ -55,14 +55,21 @@ sub retrieve {
         );
     }
 
-    TRACE("retrieving $filename $md5");
     my $url = $self->_get_url->path("/file/$filename/$md5");
-    TRACE( "Yars URL: ", $url->to_string );
+    TRACE("retrieving $filename $md5 from ", $url->to_string);
 
     # Get the file
     my $tx      = $self->client->get( $url->to_string );
 
-    INFO 'unable to retrieve file' unless $tx->success && $tx->res->code == 200;
+    if ( !$tx->success ) {
+        my ($message, $code) = $tx->error;
+        if ($code) {
+            ERROR "$code $message response";
+        }
+        else {
+            ERROR "yars connection error";
+        }
+    }
 
     return $tx;
 }
@@ -96,10 +103,22 @@ sub remove {
 
     my $url = $self->_get_url;
     $url->path("/file/$filename/$md5");
-    TRACE( "Yars URL: ", $url->to_string );
+    TRACE("removing $filename $md5 from ", $url->to_string);
+
 
     # Delete the file
-    return $self->client->delete($url);
+    my $tx = $self->client->delete($url);
+    if ( !$tx->success ) {
+        my ($message, $code) = $tx->error;
+        if ($code) {
+            ERROR "$code $message response";
+        }
+        else {
+            ERROR "yars connection error";
+        }
+    }
+
+    return $tx;
 }
 
 sub upload {
@@ -121,9 +140,7 @@ sub upload {
     my $md5      = b($content)->md5_sum;
 
     my $url = $self->_get_url->path("/file/$basename/$md5");
-    TRACE( "Yars URL: ", $url->to_string );
 
-    # Return the transaction
     my $tx = $self->client->put( $url => $content );
 
     if ( my $res = $tx->success ) {
@@ -133,12 +150,15 @@ sub upload {
         my ( $message, $code ) = $tx->error;
         if ($code) {
             print "$code $message response.\n";
+            ERROR "$code $message response";
         }
         else {
             print "Connection error: $message\n";
+            ERROR "yars connection error";
         }
     }
 
+    # Return the transaction
     return $tx;
 }
 
