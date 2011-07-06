@@ -15,11 +15,11 @@ name: Yars-Client
 provides:
   Yars::Client:
     file: lib/Yars/Client.pm
-    version: 0.19
+    version: 0.20
 requires:
   Clustericious::Client: 0.21
   Clustericious::Config: 0.04
   JSON: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.19
+version: 0.20

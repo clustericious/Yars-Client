@@ -17,7 +17,7 @@ use Pod::Usage;
 use JSON;
 use feature 'say';
 
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 
 # max downloads of 1 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 1073741824;
