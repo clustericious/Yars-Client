@@ -172,7 +172,8 @@ sub status {
 
     my $config = Clustericious::Config->new('Yars');
     my $url = _get_url();
-    if ( $config->server_type =~ /RESTAS/i ) {
+    my $server_type = $config->server_type ? $config->server_type : 'Yars';
+    if ( $server_type =~ /RESTAS/i ) {
 
         # This request never succeeds, but a '404 not found' at least means that
         # the server replied, which we use to indicate that status is ok.
@@ -181,7 +182,7 @@ sub status {
 
         if ($code == 404) {
             my %status = ( 
-                app_name        => $config->server_type,
+                app_name        => $server_type,
                 server_hostname => $url->host,
                 server_url      => $url->to_string,
                 server_version  => 'RESTAS',
