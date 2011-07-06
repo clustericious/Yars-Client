@@ -172,7 +172,7 @@ sub status {
 
     my $config = Clustericious::Config->new('Yars');
     my $url = _get_url();
-    my $server_type = $config->server_type ? $config->server_type : 'Yars';
+    my $server_type = $config->server_type(default => 'Yars');
     if ( $server_type =~ /RESTAS/i ) {
 
         # This request never succeeds, but a '404 not found' at least means that

@@ -20,5 +20,8 @@ my $welcome = $yc->welcome;
 
 like $welcome, qr/welcome to yars/i, "got welcome message";
 
+my $status = $yc->status;
+
+ok $status->{server_version};
 1;
 
