@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Clustericious::Client;
+use Clustericious::Client::Command;
 use Clustericious::Config;
 use Mojo::Asset::File;
 use Mojo::ByteStream 'b';
@@ -13,6 +14,8 @@ use File::Basename;
 use File::Spec;
 use Log::Log4perl qw(:easy);
 use Pod::Usage;
+use JSON;
+use feature 'say';
 
 our $VERSION = '0.19';
 
@@ -50,7 +53,7 @@ sub retrieve {
 
     unless ( $filename and $md5 ) {
         pod2usage(
-            -msg     => "filename and md5 needed for content\n",
+            -msg     => "filename and md5 needed for file retrieval\n",
             -exitval => 1
         );
     }
@@ -160,6 +163,48 @@ sub upload {
 
     # Return the transaction
     return $tx;
+}
+
+sub status {
+    my ($self) = @_;
+
+    # This method provides a workaround for getting the status of a RESTAS server.
+
+    my $config = Clustericious::Config->new('Yars');
+    my $url = _get_url();
+    if ( $config->server_type =~ /RESTAS/i ) {
+
+        # This request never succeeds, but a '404 not found' at least means that
+        # the server replied, which we use to indicate that status is ok.
+        my $tx = $self->client->head( $config->url . '/my_bogus_url' );
+        my ($message, $code) = $tx->error;
+
+        if ($code == 404) {
+            my %status = ( 
+                app_name        => $config->server_type,
+                server_hostname => $url->host,
+                server_url      => $url->to_string,
+                server_version  => 'RESTAS',
+            );
+
+
+            # unset the error flag in the transaction
+            $tx->error(undef);
+
+            return \%status;
+        }
+        else {
+            ERROR "yars connection error";
+        }
+
+    }
+    else {
+        my $tx = $self->client->get( $url->to_string . '/status' );
+        return $tx->success
+            ? decode_json( $tx->res->body )
+            : $tx;
+    }
+
 }
 
 1;
