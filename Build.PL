@@ -11,6 +11,7 @@ my $builder = Module::Build->new(
     requires => {
         'Clustericious::Client' => '0.21',
         'Clustericious::Config' => '0.04',
+        'JSON'                  => '0',
     },
     build_requires => {
         'Test::More' => 0,

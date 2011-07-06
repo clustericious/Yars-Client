@@ -7,6 +7,7 @@ WriteMakefile
           'PREREQ_PM' => {
                            'Clustericious::Client' => '0.21',
                            'Clustericious::Config' => '0.04',
+                           'JSON' => '0',
                            'Test::More' => 0
                          },
           'INSTALLDIRS' => 'site',
