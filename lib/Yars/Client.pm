@@ -35,12 +35,14 @@ route 'welcome' => 'GET', '/';
 
 
 
-sub _get_url {
+sub get_url {
 
-    # Helper to create the Mojo URL object.
+    # Helper to create the Mojo URL objects
+    my ($self, $path) = @_;
 
     my $config = Clustericious::Config->new('Yars');
     my $url = Mojo::URL->new( $config->url );
+    $url->path($path) if $path;
 
     return $url;
 }
@@ -58,7 +60,7 @@ sub retrieve {
         );
     }
 
-    my $url = $self->_get_url->path("/file/$filename/$md5");
+    my $url = $self->get_url("/file/$filename/$md5");
     TRACE("retrieving $filename $md5 from ", $url->to_string);
 
     # Get the file
@@ -104,10 +106,8 @@ sub remove {
         -exitval => 1
     ) unless $filename && $md5;
 
-    my $url = $self->_get_url;
-    $url->path("/file/$filename/$md5");
+    my $url = $self->get_url("/file/$filename/$md5");
     TRACE("removing $filename $md5 from ", $url->to_string);
-
 
     # Delete the file
     my $tx = $self->client->delete($url);
@@ -142,7 +142,7 @@ sub upload {
     my $content  = $asset->slurp;
     my $md5      = b($content)->md5_sum;
 
-    my $url = $self->_get_url->path("/file/$basename/$md5");
+    my $url = $self->get_url("/file/$basename/$md5");
 
     my $tx = $self->client->put( $url => $content );
 
@@ -170,8 +170,8 @@ sub status {
 
     # This method provides a workaround for getting the status of a RESTAS server.
 
+    my $url = get_url();
     my $config = Clustericious::Config->new('Yars');
-    my $url = _get_url();
     my $server_type = $config->server_type(default => 'Yars');
     if ( $server_type =~ /RESTAS/i ) {
 
