@@ -17,7 +17,7 @@ use JSON;
 use feature 'say';
 use Data::Dumper;
 
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 
 # max downloads of 1 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 1073741824;
