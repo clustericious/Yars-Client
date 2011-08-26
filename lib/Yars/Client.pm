@@ -13,9 +13,9 @@ use Mojo::UserAgent;
 use File::Basename;
 use File::Spec;
 use Log::Log4perl qw(:easy);
-use Pod::Usage;
 use JSON;
 use feature 'say';
+use Data::Dumper;
 
 our $VERSION = '0.24';
 
@@ -31,17 +31,14 @@ Clustericious::Client::Meta->add_route( "Yars::Client",
 Clustericious::Client::Meta->add_route( "Yars::Client",
     remove => "<filename> <md5>" );
 
-route 'welcome' => 'GET', '/';
 
 
-
-sub get_url {
+sub _get_url {
 
     # Helper to create the Mojo URL objects
     my ($self, $path) = @_;
 
-    my $config = Clustericious::Config->new('Yars');
-    my $url = Mojo::URL->new( $config->url );
+    my $url = Mojo::URL->new( $self->server_url );
     $url->path($path) if $path;
 
     return $url;
@@ -49,18 +46,14 @@ sub get_url {
 
 sub retrieve {
 
-    # Like download, but w/o writing to disk.  Returns the transaction.
+    # Like download, but w/o writing to disk.
 
     my ( $self, $filename, $md5 ) = @_;  # dest_dir is optional
 
-    unless ( $filename and $md5 ) {
-        pod2usage(
-            -msg     => "filename and md5 needed for file retrieval\n",
-            -exitval => 1
-        );
-    }
+    LOGDIE "filename and md5 needed for file retrieval"
+        unless ( $filename and $md5 );
 
-    my $url = $self->get_url("/file/$filename/$md5");
+    my $url = $self->_get_url("/file/$filename/$md5");
     TRACE("retrieving $filename $md5 from ", $url->to_string);
 
     # Get the file
@@ -81,16 +74,16 @@ sub retrieve {
 
 sub download {
 
-    # Downloads a file and saves it to disk.  Returns the transaction.
+    # Downloads a file and saves it to disk.
 
     my ( $self, $filename, $md5, $dest_dir ) = @_;
 
     my $tx = $self->retrieve($filename, $md5);
 
-    return $tx unless $tx->success;
-
-    my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
-    $tx->res->content->asset->move_to($out_file);
+    unless ($tx->error) {
+        my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
+        $tx->res->content->asset->move_to($out_file);
+    }
 
     return $tx;
 }
@@ -101,27 +94,15 @@ sub remove {
 
     my ( $self, $filename, $md5 ) = @_;
 
-    pod2usage(
-        -msg     => "file and md5 needed for remove",
-        -exitval => 1
-    ) unless $filename && $md5;
+    LOGDIE "file and md5 needed for remove"
+        unless $filename && $md5;
 
-    my $url = $self->get_url("/file/$filename/$md5");
+    my $url = $self->_get_url("/file/$filename/$md5");
     TRACE("removing $filename $md5 from ", $url->to_string);
 
     # Delete the file
-    my $tx = $self->client->delete($url);
-    if ( !$tx->success ) {
-        my ($message, $code) = $tx->error;
-        if ($code) {
-            ERROR "$code $message response";
-        }
-        else {
-            ERROR "yars connection error";
-        }
-    }
+    return $self->client->delete($url);  # returns the transaction
 
-    return $tx;
 }
 
 sub upload {
@@ -130,82 +111,122 @@ sub upload {
 
     my ( $self, $filename ) = @_;
 
-    pod2usage(
-        -msg     => "file needed for upload",
-        -exitval => 1
-    ) unless $filename;
-    -r $filename or LOGDIE "Could not read " . File::Spec->rel2abs($filename);
+    LOGDIE "file needed for upload" unless $filename;
+    $filename = File::Spec->rel2abs($filename);
+    -r $filename or LOGDIE "Could not read " . $filename;
 
     # Read the file
-    my $asset    = Mojo::Asset::File->new( path => $filename );
     my $basename = basename($filename);
+    my $asset    = Mojo::Asset::File->new( path => $filename );
     my $content  = $asset->slurp;
     my $md5      = b($content)->md5_sum;
 
-    my $url = $self->get_url("/file/$basename/$md5");
+    my $url = $self->_get_url("/file/$basename/$md5");
 
     my $tx = $self->client->put( $url => $content );
 
-    if ( my $res = $tx->success ) {
-        print $res->code," ",$res->default_message,"\n";
-    }
-    else {
-        my ( $message, $code ) = $tx->error;
-        if ($code) {
-            print "$code $message response.\n";
-            ERROR "$code $message response";
+
+    if ( my ($message, $code) = $tx->error ) {
+
+        if (defined $code) {
+            if ( $self->server_type eq 'RESTAS' and $code == 409 ) {
+                # Workaround for RESTAS which sends a 409 instead of a 200 when
+                # putting a previously putted file.
+                $tx->res->error(undef);  # unset the error flag
+                $tx->res->code(200);
+                $tx->res->message('ok');
+            }
+            else {
+                ERROR "$code $message";
+            }
         }
         else {
-            print "Connection error: $message\n";
-            ERROR "yars connection error";
+            ERROR $message;
         }
+
     }
 
     # Return the transaction
     return $tx;
 }
 
+sub server_type {
+    my $self = shift;
+    my $config = Clustericious::Config->new('Yars');
+    my $server_type = $config->server_type(default => 'Yars');
+
+    $server_type =~ /RESTAS/i
+    ? 'RESTAS'
+    : 'Yars';
+}
+
 sub status {
     my ($self) = @_;
 
-    # This method provides a workaround for getting the status of a RESTAS server.
+    # Provides a workaround for getting the status of a RESTAS server.
 
-    my $url = get_url();
-    my $config = Clustericious::Config->new('Yars');
-    my $server_type = $config->server_type(default => 'Yars');
-    if ( $server_type =~ /RESTAS/i ) {
+    if ( $self->server_type eq 'RESTAS' ) {
+        # RESTAS sever status
 
         # This request never succeeds, but a '404 not found' at least means that
         # the server replied, which we use to indicate that status is ok.
-        my $tx = $self->client->head( $config->url . '/my_bogus_url' );
+        my $tx = $self->client->head( $self->server_url . '/my_bogus_url' );
         my ($message, $code) = $tx->error;
 
-        if ($code == 404) {
+        my $config = Clustericious::Config->new('Yars');
+        my $host = $config->{ssh_tunnel}
+            ? $config->{ssh_tunnel}{server_host}
+            : $config->{host};
+       
+        if (defined $code and $code == 404) {
             my %status = ( 
-                app_name        => $server_type,
-                server_hostname => $url->host,
-                server_url      => $url->to_string,
+                app_name        => 'Yars',
+                server_hostname => $host,
+                server_url      => $self->server_url,
                 server_version  => 'RESTAS',
             );
 
-
-            # unset the error flag in the transaction
-            $tx->error(undef);
+            $tx->res->error(undef);  # unset the error flag
 
             return \%status;
         }
         else {
-            ERROR "yars connection error";
+            return $tx->error;
         }
-
     }
     else {
+        # Yars server status
+
+        my $url = $self->_get_url();
         my $tx = $self->client->get( $url->to_string . '/status' );
+        return $tx->error
+            ? $tx->error
+            : decode_json( $tx->res->body );
+    }
+}
+
+sub welcome {
+
+    # Provides a workaround to get a welcome message from a RESTAS server 
+
+    my $self = shift;
+
+    if ( $self->server_type eq 'RESTAS' ) {
+        my $status = $self->status;
+        if ( ref $status and $status->{server_hostname} ) {
+            return "welcome to RESTAS";
+        }
+        else {
+            return $status;
+        }
+    }
+    else {
+        my $tx = $self->client->get( $self->server_url);
+
         return $tx->success
-            ? decode_json( $tx->res->body )
+            ? $tx->res->body
             : $tx;
     }
-
 }
 
 1;
@@ -214,7 +235,7 @@ __END__
 
 =head1 NAME
 
-Yars::Client (Yet Another RESTAS Client)
+Yars::Client (Yet Another REST Server Client)
 
 =head1 SYNOPSIS
 
@@ -227,9 +248,9 @@ Yars::Client (Yet Another RESTAS Client)
  $r->download($filename, $md5);
  $r->download($filename, $md5, /tmp);   # download it to the /tmp directory
 
-
  # Delete a file
  $r->remove($filename, $md5);
+
 
 
 =head1 DESCRIPTION
@@ -242,5 +263,5 @@ Client for Yars.  Yars and Yars-Client are lightweight alternatives to RESTAS th
  yarsclient (executable that comes with Yars::Client)
  RESTAS-Client
  Clustericious::Client
- Mojo::Transaction::HTTP
  Mojo::Transaction
+ Mojo::Transaction::HTTP
