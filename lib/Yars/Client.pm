@@ -16,7 +16,7 @@ use Log::Log4perl qw(:easy);
 use JSON;
 use feature 'say';
 
-our $VERSION = '0.25';
+our $VERSION = '0.26';
 
 # max downloads of 1 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} = 1073741824;
