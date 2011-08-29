@@ -21,10 +21,25 @@ EOT
 
 if ($ARGV[0] and $ARGV[0] eq 'upload') {
     # Clustericious-Client attempts to load file arguments as YAML by default, but
-    # not all files to upload are YAML.
+    # not all files to upload are YAML.  This might be better fixed in Clustericious,
+    # but this solution also gives a little more consistency when running with a 
+    # RESTAS server.
+
     shift @ARGV;
     my $yc = Yars::Client->new;
-    $yc->upload(@ARGV);
+    my $tx = $yc->upload(@ARGV);
+    if ( my $res = $tx->success ) {
+        print $res->code," ",$res->default_message,"\n";
+    }
+    else {
+        my ( $message, $code ) = $tx->error;
+        if ($code) {
+            print "$code $message response.\n";
+        }
+        else {
+            print "Connection error: $message\n";
+        }
+    }
 } 
 else {
     Clustericious::Client::Command->run(Yars::Client->new, @ARGV);

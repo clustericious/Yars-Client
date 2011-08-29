@@ -15,7 +15,6 @@ use File::Spec;
 use Log::Log4perl qw(:easy);
 use JSON;
 use feature 'say';
-use Data::Dumper;
 
 our $VERSION = '0.25';
 
