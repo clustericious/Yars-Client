@@ -14,7 +14,7 @@ use File::Basename;
 use File::Spec;
 use Log::Log4perl qw(:easy);
 use JSON;
-use feature 'say';
+use feature qw(say);
 
 our $VERSION = '0.26';
 
@@ -122,28 +122,26 @@ sub upload {
 
     my $url = $self->_get_url("/file/$basename/$md5");
 
-    my $tx = $self->client->put( $url => $content );
+    my $tx;
+    if ( $self->server_type eq 'RESTAS' ) {
 
+        # Workaround for RESTAS which sends a 409 instead of a 200 when
+        # putting a previously putted file.
 
-    if ( my ($message, $code) = $tx->error ) {
-
-        if (defined $code) {
-            if ( $self->server_type eq 'RESTAS' and $code == 409 ) {
-                # Workaround for RESTAS which sends a 409 instead of a 200 when
-                # putting a previously putted file.
-                $tx->res->error(undef);  # unset the error flag
-                $tx->res->code(200);
-                $tx->res->message('ok');
-            }
-            else {
-                ERROR "$code $message";
-            }
-        }
-        else {
-            ERROR $message;
-        }
-
+        my $head_check = $self->client->head($url);
+        $tx = $head_check if $head_check->success;
     }
+    
+
+    if ( !$tx ) {
+        # Either we have a Yars server or the head_check was negative
+
+        $tx = $self->client->put( $url => $content );
+        if ( my ($message, $code) = $tx->error ) {
+            defined $code ? ERROR "$code $message" : ERROR $message;
+        }
+    }
+
 
     # Return the transaction
     return $tx;
