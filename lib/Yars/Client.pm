@@ -9,7 +9,7 @@ use Clustericious::Config;
 use Mojo::Asset::File;
 use Mojo::ByteStream 'b';
 use Mojo::URL;
-use Mojo::UserAgent;
+use Mojo::Base '-base';
 use File::Basename;
 use File::Spec;
 use Log::Log4perl qw(:easy);
@@ -30,7 +30,16 @@ Clustericious::Client::Meta->add_route( "Yars::Client",
 Clustericious::Client::Meta->add_route( "Yars::Client",
     remove => "<filename> <md5>" );
 
+has server_type => sub { shift->_config->server_type(default => 'Yars') };
 
+route 'bucket_map' => "GET", '/bucket_map';
+route 'disk_stats' => "GET", '/stats/files_by_disk';
+
+sub new {
+    my $self = shift->SUPER::new(@_);
+    $self->client->max_redirects(30);
+    return $self;
+}
 
 sub _get_url {
 
@@ -131,7 +140,7 @@ sub upload {
         my $head_check = $self->client->head($url);
         $tx = $head_check if $head_check->success;
     }
-    
+
 
     if ( !$tx ) {
         # Either we have a Yars server or the head_check was negative
@@ -147,23 +156,15 @@ sub upload {
     return $tx;
 }
 
-sub server_type {
-    my $self = shift;
-    my $config = Clustericious::Config->new('Yars');
-    my $server_type = $config->server_type(default => 'Yars');
-
-    $server_type =~ /RESTAS/i
-    ? 'RESTAS'
-    : 'Yars';
-}
-
 sub status {
-    my ($self) = @_;
+    my $self = shift;
+
+    return $self->SUPER::status(@_) unless $self->server_type eq 'RESTAS';
 
     # Provides a workaround for getting the status of a RESTAS server.
 
     if ( $self->server_type eq 'RESTAS' ) {
-        # RESTAS sever status
+        # RESTAS server status
 
         # This request never succeeds, but a '404 not found' at least means that
         # the server replied, which we use to indicate that status is ok.
@@ -174,9 +175,9 @@ sub status {
         my $host = $config->{ssh_tunnel}
             ? $config->{ssh_tunnel}{server_host}
             : $config->{host};
-       
+
         if (defined $code and $code == 404) {
-            my %status = ( 
+            my %status = (
                 app_name        => 'Yars',
                 server_hostname => $host,
                 server_url      => $self->server_url,
@@ -191,23 +192,13 @@ sub status {
             return $tx->error;
         }
     }
-    else {
-        # Yars server status
-
-        my $url = $self->_get_url();
-        my $tx = $self->client->get( $url->to_string . '/status' );
-        return $tx->error
-            ? $tx->error
-            : decode_json( $tx->res->body );
-    }
 }
 
 sub welcome {
+    my $self = shift;
+    return $self->SUPER::welcome(@_) unless $self->server_type eq 'RESTAS';
 
     # Provides a workaround to get a welcome message from a RESTAS server 
-
-    my $self = shift;
-
     if ( $self->server_type eq 'RESTAS' ) {
         my $status = $self->status;
         if ( ref $status and $status->{server_hostname} ) {
@@ -216,13 +207,6 @@ sub welcome {
         else {
             return $status;
         }
-    }
-    else {
-        my $tx = $self->client->get( $self->server_url);
-
-        return $tx->success
-            ? $tx->res->body
-            : $tx;
     }
 }
 
