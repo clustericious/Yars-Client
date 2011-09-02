@@ -17,7 +17,8 @@ my $c = Yars::Client->new(
     server_url  => "http://localhost:9051",
     server_type => "Yars"
 );
-#$c->client->log->level('FATAL');
+Yars::Client->get_logger()->level("FATAL");
+Clustericious::Client->get_logger()->level("FATAL");
 
 my $status = $c->status;
 
