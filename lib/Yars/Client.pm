@@ -34,7 +34,8 @@ has server_type => sub { shift->_config->server_type(default => 'Yars') };
 has bucket_map_cached  => sub { 0; }; # Computed on demand.
 
 route 'bucket_map' => "GET", '/bucket_map';
-route 'disk_stats' => "GET", '/stats/files_by_disk';
+route 'disk_usage' => "GET", '/usage/files_by_disk';
+route 'servers_status' => "GET", '/servers/status';
 
 sub new {
     my $self = shift->SUPER::new(@_);
