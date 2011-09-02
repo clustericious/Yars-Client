@@ -13,7 +13,7 @@ use Mojo::Base '-base';
 use File::Basename;
 use File::Spec;
 use Log::Log4perl qw(:easy);
-use JSON;
+use Data::Dumper;
 use feature qw(say);
 
 our $VERSION = '0.27';
@@ -31,6 +31,7 @@ Clustericious::Client::Meta->add_route( "Yars::Client",
     remove => "<filename> <md5>" );
 
 has server_type => sub { shift->_config->server_type(default => 'Yars') };
+has bucket_map_cached  => sub { 0; }; # Computed on demand.
 
 route 'bucket_map' => "GET", '/bucket_map';
 route 'disk_stats' => "GET", '/stats/files_by_disk';
@@ -113,10 +114,25 @@ sub remove {
 
 }
 
+# Given an md5, determine the correct server
+# using a cached list of bucket->server assignments.
+sub _server_for {
+    my $self = shift;
+    my $md5 = shift;
+    my $bucket_map = $self->bucket_map_cached;
+    unless ($bucket_map) {
+        $bucket_map = $self->bucket_map;
+        $self->bucket_map_cached($bucket_map);
+    }
+    for (0..length($md5)) {
+        my $prefix = substr($md5,0,$_);
+        return $bucket_map->{ lc $prefix } if exists($bucket_map->{lc $prefix});
+        return $bucket_map->{ uc $prefix } if exists($bucket_map->{uc $prefix});
+    }
+    LOGDIE "Can't find url for $md5 in bucket map : ".Dumper($bucket_map);
+}
+
 sub upload {
-
-    # Uploads a file
-
     my ( $self, $filename ) = @_;
 
     LOGDIE "file needed for upload" unless $filename;
@@ -129,18 +145,22 @@ sub upload {
     my $content  = $asset->slurp;
     my $md5      = b($content)->md5_sum;
 
-    my $url = $self->_get_url("/file/$basename/$md5");
-
+    my $url;
     my $tx;
     if ( $self->server_type eq 'RESTAS' ) {
 
         # Workaround for RESTAS which sends a 409 instead of a 200 when
         # putting a previously putted file.
 
+        $url = $self->_get_url("/file/$basename/$md5");
         my $head_check = $self->client->head($url);
         $tx = $head_check if $head_check->success;
+    } else {
+        my $assigned = $self->_server_for($md5);
+        $url = Mojo::URL->new($assigned);
+        $url->path("/file/$basename/$md5");
+        DEBUG "Sending $md5 to $url";
     }
-
 
     if ( !$tx ) {
         # Either we have a Yars server or the head_check was negative
