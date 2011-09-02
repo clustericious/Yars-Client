@@ -32,7 +32,7 @@ like $status->{server_version}, qr/\d/, "server version is numeric";
 my $map = $c->bucket_map;
 ok defined($map);
 
-my $stats = $c->disk_stats;
+my $stats = $c->disk_usage;
 ok defined($stats);
 
 for (0..20) {
@@ -59,6 +59,13 @@ for (0..20) {
 
     my $got = b(join '', IO::File->new("$tempdir/$filename")->getlines)->md5_sum;
     is $got, $md5, "got right md5 back";
+}
+
+my $up = $c->servers_status;
+for my $server (keys %$up) {
+    for my $disk (keys %{ $up->{$server} } ) {
+        is $up->{$server}{$disk}, 'up', "Server $server, disk $disk is up";
+    }
 }
 
 done_testing();
