@@ -9,5 +9,6 @@ README
 t/00-load.t
 t/01-get.t
 t/data/welcome
+t/integrate/001_buckets.t
 t/pod.t
 t/write/01-round_trip.t
