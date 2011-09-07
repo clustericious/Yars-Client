@@ -211,6 +211,7 @@ sub status {
         }
         else {
             ERROR $tx->error;
+            $self->res($tx->res);
             return;
         }
     }
