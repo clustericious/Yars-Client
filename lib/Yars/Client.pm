@@ -91,6 +91,7 @@ sub download {
     my $tx = $self->retrieve($filename, $md5);
 
     unless ($tx->error) {
+        ($filename,$md5) = ($md5,$filename) if $filename =~ /^[0-9a-f]{32}$/i;
         my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
         $tx->res->content->asset->move_to($out_file);
     }
