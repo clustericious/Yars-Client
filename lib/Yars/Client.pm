@@ -210,7 +210,8 @@ sub status {
             return \%status;
         }
         else {
-            return $tx->error;
+            ERROR $tx->error;
+            return;
         }
     }
 }
