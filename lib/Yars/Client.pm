@@ -58,11 +58,18 @@ sub _get_url {
 sub download {
     # Downloads a file and saves it to disk.
     my $self = shift;
-
     my ( $filename, $md5, $dest_dir ) = @_;
+    my $url;
+    if (@_ == 1) {
+        $url = shift;
+        ($filename) = $url =~ m|/([^/]+)$|;
+    }
     ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
-    my $content = $self->retrieve( $filename, $md5 );
-    return 0 if $self->errorstring;
+    DEBUG "getting from $url";
+    my $content =                  $url ? $self->_doit( GET => $url )
+       : $self->server_type eq 'RESTAS' ? $self->retrieve( $filename, $md5 )
+       :                                  $self->retrieve( $md5, $filename );
+    return '' if $self->errorstring;
     my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
     Mojo::Asset::File->new->add_chunk($content)->move_to($out_file);
     return 'ok';
@@ -77,7 +84,11 @@ sub remove {
     LOGDIE "file and md5 needed for remove"
         unless $filename && $md5;
 
-    my $url = $self->_get_url("/file/$filename/$md5");
+    my $url = (
+          $self->server_type eq 'RESTAS'
+        ? $self->_get_url("/file/$filename/$md5")
+        : $self->_get_url("/file/$md5/$filename")
+    );
     TRACE("removing $filename $md5 from ", $url->to_string);
 
     # Delete the file
