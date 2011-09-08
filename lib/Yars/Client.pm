@@ -36,6 +36,7 @@ has bucket_map_cached  => sub { 0; }; # Computed on demand.
 route 'bucket_map' => "GET", '/bucket_map';
 route 'disk_usage' => "GET", '/usage/files_by_disk';
 route 'servers_status' => "GET", '/servers/status';
+route 'retrieve' => "GET", '/file', \"<md5> <filename>";
 
 sub new {
     my $self = shift->SUPER::new(@_);
@@ -54,49 +55,17 @@ sub _get_url {
     return $url;
 }
 
-sub retrieve {
-
-    # Like download, but w/o writing to disk.
-
-    my ( $self, $filename, $md5 ) = @_;  # dest_dir is optional
-
-    LOGDIE "filename and md5 needed for file retrieval"
-        unless ( $filename and $md5 );
-
-    my $url = $self->_get_url("/file/$filename/$md5");
-    TRACE("retrieving $filename $md5 from ", $url->to_string);
-
-    # Get the file
-    my $tx      = $self->client->get( $url->to_string );
-
-    if ( !$tx->success ) {
-        my ($message, $code) = $tx->error;
-        if ($code) {
-            ERROR "$code $message response";
-        }
-        else {
-            ERROR "yars connection error";
-        }
-    }
-
-    return $tx;
-}
-
 sub download {
-
     # Downloads a file and saves it to disk.
+    my $self = shift;
 
-    my ( $self, $filename, $md5, $dest_dir ) = @_;
-
-    my $tx = $self->retrieve($filename, $md5);
-
-    unless ($tx->error) {
-        ($filename,$md5) = ($md5,$filename) if $filename =~ /^[0-9a-f]{32}$/i;
-        my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
-        $tx->res->content->asset->move_to($out_file);
-    }
-
-    return $tx;
+    my ( $filename, $md5, $dest_dir ) = @_;
+    ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
+    my $content = $self->retrieve( $filename, $md5 );
+    return 0 if $self->errorstring;
+    my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
+    Mojo::Asset::File->new->add_chunk($content)->move_to($out_file);
+    return 'ok';
 }
 
 sub remove {
@@ -251,7 +220,8 @@ Yars::Client (Yet Another REST Server Client)
 
  # Get a file
  $r->download($filename, $md5);
- $r->download($filename, $md5, /tmp);   # download it to the /tmp directory
+ $r->download($filename, $md5, '/tmp');   # download it to the /tmp directory
+ $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
 
  # Delete a file
  $r->remove($filename, $md5);
