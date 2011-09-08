@@ -33,10 +33,11 @@ Clustericious::Client::Meta->add_route( "Yars::Client",
 has server_type => sub { shift->_config->server_type(default => 'Yars') };
 has bucket_map_cached  => sub { 0; }; # Computed on demand.
 
-route 'bucket_map' => "GET", '/bucket_map';
-route 'disk_usage' => "GET", '/usage/files_by_disk';
-route 'servers_status' => "GET", '/servers/status';
-route 'retrieve' => "GET", '/file', \"<md5> <filename>";
+route 'bucket_map'     => "GET",  '/bucket_map';
+route 'disk_usage'     => "GET",  '/usage/files_by_disk';
+route 'servers_status' => "GET",  '/servers/status';
+route 'retrieve'       => "GET",  '/file', \"<md5> <filename>";
+route 'set_status'     => "POST", '/disk/status';
 
 sub new {
     my $self = shift->SUPER::new(@_);
@@ -227,22 +228,34 @@ Yars::Client (Yet Another REST Server Client)
  my $r = Yars::Client->new;
 
  # Put a file
- $r->upload($filename);
+ my $tx = $r->upload($filename);
+ die $tx->error unless $tx->success;
 
- # Get a file
- $r->download($filename, $md5);
- $r->download($filename, $md5, '/tmp');   # download it to the /tmp directory
- $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
+ # Write a file to disk
+ my $ok = $r->download($filename, $md5);
+ my $ok = $r->download($filename, $md5, '/tmp');   # download it to the /tmp directory
+ my $ok = $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
+
+ # Get the content of a file
+ my $content = $r->retrieve($filename,$md5);
 
  # Delete a file
  $r->remove($filename, $md5);
 
+ print "Server version is ".$r->status->{server_version};
+ my $usage = $r->disk_usage();      # Returns usage for a single server.
+ my $nother_usage = Yars::Client->new(url => "http://anotherserver.nasa.gov:9999")->disk_usage();
+ my $status = $r->servers_status(); # return a hash of servers, disks, and their statuses
 
+ # Mark a disk down :
+ my $ok = $r->set_status({ root => "/acps/disk/one", state => "down" });
+
+ # Mark a disk up :
+ my $ok = $r->set_status({ root => "/acps/disk/one", state => "up" });
 
 =head1 DESCRIPTION
 
-Client for Yars.  Yars and Yars-Client are lightweight alternatives to RESTAS that can be used during development.  Yars-Client is also compatible with RESTAS-Server.  Each of the above methods returns a Mojo::Transaction::HTTP object.
-
+Client for Yars.
 
 =head1 SEE ALSO
 
