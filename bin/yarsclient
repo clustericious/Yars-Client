@@ -72,6 +72,12 @@ B<yarsclient> - Upload, download, and delete files to Yars.
     yarsclient disk_usage
     yarsclient disk_usage --all 1
 
+    # Mark a disk down
+    yarsclient set_status --host http://yars_host_with_f1010.nasa.gov:9309 --disk /acps/f101 --state down
+
+    # Mark a disk up
+    yarsclient set_status --host http://yars_host_with_f1010.nasa.gov:9309 --disk /acps/f101 --state up
+
 =head1 DESCRIPTION
 
 Command-line interface to Yars::Client.  Client for Yars.
