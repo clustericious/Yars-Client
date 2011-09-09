@@ -67,11 +67,13 @@ sub download {
         ($filename) = $url =~ m|/([^/]+)$|;
     }
     ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
+
     my $content =                  $url ? $self->_doit( GET => $url )
        : $self->server_type eq 'RESTAS' ? $self->retrieve( $filename, $md5 )
        :                                  $self->retrieve( $md5, $filename );
     return '' if $self->errorstring;
     my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
+    DEBUG "Writing to $out_file";
     Mojo::Asset::File->new->add_chunk($content)->move_to($out_file);
     return 'ok';
 }
@@ -155,6 +157,7 @@ sub upload {
         }
     }
 
+    $self->res($tx->res);
     return 'ok';
 }
 
