@@ -213,18 +213,19 @@ Yars::Client (Yet Another REST Server Client)
 
  my $r = Yars::Client->new;
 
- # Put a file
+ # Put a file.
  $r->upload($filename) or die $r->errorstring;
+ print $r->res->headers->location;
 
- # Write a file to disk
+ # Write a file to disk.
  $r->download($filename, $md5) or die $r->errorstring;
  $r->download($filename, $md5, '/tmp');   # download it to the /tmp directory
  $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
 
- # Get the content of a file
+ # Get the content of a file.
  my $content = $r->retrieve($filename,$md5);
 
- # Delete a file
+ # Delete a file.
  $r->remove($filename, $md5);
 
  print "Server version is ".$r->status->{server_version};
@@ -232,11 +233,11 @@ Yars::Client (Yet Another REST Server Client)
  my $nother_usage = Yars::Client->new(url => "http://anotherserver.nasa.gov:9999")->disk_usage();
  my $status = $r->servers_status(); # return a hash of servers, disks, and their statuses
 
- # Mark a disk down :
+ # Mark a disk down.
  my $ok = $r->set_status({ root => "/acps/disk/one", state => "down" });
  my $ok = $r->set_status({ root => "/acps/disk/one", state => "down", host => "http://someyarshost.nasa.gov" });
 
- # Mark a disk up :
+ # Mark a disk up.
  my $ok = $r->set_status({ root => "/acps/disk/one", state => "up" });
 
 =head1 DESCRIPTION
