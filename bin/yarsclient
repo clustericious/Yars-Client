@@ -45,32 +45,40 @@ else {
     Clustericious::Client::Command->run(Yars::Client->new, @ARGV);
 }
 
-
-
 __END__
 
 =head1 NAME
 
 B<yarsclient> - Upload, download, and delete files to Yars.
 
-
 =head1 SYNOPSIS
 
-B<yarsclient> upload FILE
+    # Send a file to Yars.
+    yarsclient upload <filename>
 
-B<yarsclient> download FILE MD5
+    # Get the file back, write it to the current directory.
+    yarsclient download <filename> <md5>
 
-B<yarsclient> remove FILE MD5
+    # Get just the content back to stdout.
+    yarsclient retrieve <filename> <md5>
 
+    # Delete the file from Yars.
+    yarsclient remove <filename> <md5>
 
+    # Check the status of all the yars hosts and disks.
+    yarsclient servers_status
+
+    # Check the usage of the disks, either from the configured host, or all hosts
+    yarsclient disk_usage
+    yarsclient disk_usage --all 1
 
 =head1 DESCRIPTION
 
 Command-line interface to Yars::Client.  Client for Yars.
 
-
 =head1 AUTHORS
 
+Brian Duggan, C<< <brian.duggan at nasa.gov> >>
 Marty Brandon, C<< <mbrandon at sesda2.com> >>
 
 =head1 SEE ALSO
