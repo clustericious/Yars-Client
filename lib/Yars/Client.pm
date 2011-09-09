@@ -33,6 +33,7 @@ Clustericious::Client::Meta->add_route( "Yars::Client",
 has server_type => sub { shift->_config->server_type(default => 'Yars') };
 has bucket_map_cached  => sub { 0; }; # Computed on demand.
 
+route 'welcome'        => "GET",  '/';
 route 'bucket_map'     => "GET",  '/bucket_map';
 route 'disk_usage'     => "GET",  '/disk/usage';
 route 'servers_status' => "GET",  '/servers/status';
@@ -66,7 +67,6 @@ sub download {
         ($filename) = $url =~ m|/([^/]+)$|;
     }
     ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
-    DEBUG "getting from $url";
     my $content =                  $url ? $self->_doit( GET => $url )
        : $self->server_type eq 'RESTAS' ? $self->retrieve( $filename, $md5 )
        :                                  $self->retrieve( $md5, $filename );
@@ -151,12 +151,11 @@ sub upload {
         $tx = $self->client->put( $url => $content );
         if ( my ($message, $code) = $tx->error ) {
             defined $code ? ERROR "$code $message" : ERROR $message;
+            return '';
         }
     }
 
-
-    # Return the transaction
-    return $tx;
+    return 'ok';
 }
 
 sub status {
@@ -199,22 +198,6 @@ sub status {
     }
 }
 
-sub welcome {
-    my $self = shift;
-    return $self->SUPER::welcome(@_) unless $self->server_type eq 'RESTAS';
-
-    # Provides a workaround to get a welcome message from a RESTAS server 
-    if ( $self->server_type eq 'RESTAS' ) {
-        my $status = $self->status;
-        if ( ref $status and $status->{server_hostname} ) {
-            return "welcome to RESTAS";
-        }
-        else {
-            return $status;
-        }
-    }
-}
-
 1;
 
 __END__
@@ -228,13 +211,12 @@ Yars::Client (Yet Another REST Server Client)
  my $r = Yars::Client->new;
 
  # Put a file
- my $tx = $r->upload($filename);
- die $tx->error unless $tx->success;
+ $r->upload($filename) or die $r->errorstring;
 
  # Write a file to disk
- my $ok = $r->download($filename, $md5);
- my $ok = $r->download($filename, $md5, '/tmp');   # download it to the /tmp directory
- my $ok = $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
+ $r->download($filename, $md5) or die $r->errorstring;
+ $r->download($filename, $md5, '/tmp');   # download it to the /tmp directory
+ $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
 
  # Get the content of a file
  my $content = $r->retrieve($filename,$md5);
@@ -249,6 +231,7 @@ Yars::Client (Yet Another REST Server Client)
 
  # Mark a disk down :
  my $ok = $r->set_status({ root => "/acps/disk/one", state => "down" });
+ my $ok = $r->set_status({ root => "/acps/disk/one", state => "down", host => "http://someyarshost.nasa.gov" });
 
  # Mark a disk up :
  my $ok = $r->set_status({ root => "/acps/disk/one", state => "up" });
@@ -260,7 +243,4 @@ Client for Yars.
 =head1 SEE ALSO
 
  yarsclient (executable that comes with Yars::Client)
- RESTAS-Client
  Clustericious::Client
- Mojo::Transaction
- Mojo::Transaction::HTTP

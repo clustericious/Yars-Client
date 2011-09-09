@@ -15,14 +15,7 @@ print "uploading\n";
 my $y = Yars::Client->new();
 my @locations;
 for (1..100) {
-    my $got = $y->upload("files/file.$_");
-    if (my $res = $got->success) {
-        print "ok : ".$res->code."\n";
-        #print "ok : ".$res->to_string."\n"; for more verbose info
-        push @locations, $res->headers->location;
-    } else {
-        print "not ok : ".$got->error;
-    }
+    $y->upload("files/file.$_") or print $y->errorstring;
 }
 
 
