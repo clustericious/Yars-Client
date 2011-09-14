@@ -80,9 +80,7 @@ sub download {
 }
 
 sub remove {
-
     # Removes a file
-
     my ( $self, $filename, $md5 ) = @_;
 
     LOGDIE "file and md5 needed for remove"
@@ -96,8 +94,7 @@ sub remove {
     TRACE("removing $filename $md5 from ", $url->to_string);
 
     # Delete the file
-    return $self->client->delete($url);  # returns the transaction
-
+    $self->_doit(DELETE => $url);
 }
 
 # Given an md5, determine the correct server

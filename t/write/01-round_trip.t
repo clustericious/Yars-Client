@@ -48,6 +48,10 @@ my $md5     = b($content)->md5_sum->to_string;
 
 ok( $md5 eq '0bb3c30dc72e63881db5005f1aa19ac3', 'content' );
 
+ok $r->check( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), 'check worked';
+ok !$r->check( 'welcome', '1bb3c30dc72e63881db5005f1aa19ac3'), 'check worked';
+
+
 ok $r->remove( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), "called remove";
 is ($r->res->code, 200, 'status was 200');
 
