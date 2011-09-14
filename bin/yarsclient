@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use File::Spec;
 use File::Basename 'dirname';
-
+use Clustericious::Log;
 
 use lib join '/', File::Spec->splitdir(dirname(__FILE__)), 'lib';
 use lib join '/', File::Spec->splitdir(dirname(__FILE__)), '..', 'lib';
@@ -27,20 +27,8 @@ if ($ARGV[0] and $ARGV[0] eq 'upload') {
 
     shift @ARGV;
     my $yc = Yars::Client->new;
-    my $tx = $yc->upload(@ARGV);
-    if ( my $res = $tx->success ) {
-        print $res->code," ",$res->default_message,"\n";
-    }
-    else {
-        my ( $message, $code ) = $tx->error;
-        if ($code) {
-            print "$code $message response.\n";
-        }
-        else {
-            print "Connection error: $message\n";
-        }
-    }
-} 
+    $yc->upload(@ARGV) or LOGDIE "upload failed : ".$yc->errorstring;
+}
 else {
     Clustericious::Client::Command->run(Yars::Client->new, @ARGV);
 }

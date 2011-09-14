@@ -153,10 +153,12 @@ sub upload {
         $tx = $self->client->put( $url => $content );
         if ( my ($message, $code) = $tx->error ) {
             defined $code ? ERROR "$code $message" : ERROR $message;
+            $self->res($tx->res);
             return '';
         }
     }
 
+    DEBUG "Response : ".$tx->res->code." ".$tx->res->message;
     $self->res($tx->res);
     return 'ok';
 }
