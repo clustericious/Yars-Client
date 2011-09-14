@@ -63,7 +63,7 @@ sub location {
 
     ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
     $self->server_url($self->_server_for($md5));
-    return $self->_get_url("/file/$md5/$filename")->to_abs;
+    return $self->_get_url("/file/$md5/$filename")->to_abs->to_string;
 }
 
 sub download {
