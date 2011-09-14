@@ -58,6 +58,14 @@ sub _get_url {
     return $url;
 }
 
+sub location {
+    my ($self, $filename, $md5) = @_;
+
+    ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
+    $self->server_url($self->_server_for($md5));
+    return $self->_get_url("/file/$md5/$filename")->to_abs;
+}
+
 sub download {
     # Downloads a file and saves it to disk.
     my $self = shift;
@@ -229,7 +237,10 @@ Yars::Client (Yet Another REST Server Client)
  my $content = $r->retrieve($filename,$md5);
 
  # Delete a file.
- $r->remove($filename, $md5);
+ $r->remove($filename, $md5) or die $r->errorstring;
+
+ # Find the URL of a file.
+ print $r->location($filename, $md5);
 
  print "Server version is ".$r->status->{server_version};
  my $usage = $r->disk_usage();      # Returns usage for a single server.

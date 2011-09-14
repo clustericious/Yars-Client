@@ -30,6 +30,8 @@ my $tx;
 ok $r->upload( $Bin . '/../data/welcome' ), "uploaded a file";
 ok $r->res->is_status_class(200), "status is 2xx";
 
+is $r->res->headers->location, $r->location("welcome","0bb3c30dc72e63881db5005f1aa19ac3"), "right location";
+
 ok $r->upload( $Bin . '/../data/welcome' ), "uploaded same file";
 ok $r->res->is_status_class(200), "Yars (201) or RESTAS (200)";
 
@@ -50,7 +52,6 @@ ok( $md5 eq '0bb3c30dc72e63881db5005f1aa19ac3', 'content' );
 
 ok $r->check( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), 'check worked';
 ok !$r->check( 'welcome', '1bb3c30dc72e63881db5005f1aa19ac3'), 'check worked';
-
 
 ok $r->remove( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), "called remove";
 is ($r->res->code, 200, 'status was 200');
