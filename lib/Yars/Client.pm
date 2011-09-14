@@ -38,6 +38,7 @@ route 'bucket_map'     => "GET",  '/bucket_map';
 route 'disk_usage'     => "GET",  '/disk/usage';
 route 'servers_status' => "GET",  '/servers/status';
 route 'retrieve'       => "GET",  '/file', \"<md5> <filename>";
+route 'check'          => "HEAD", '/file', \"<md5> <filename>";
 route 'set_status'     => "POST", '/disk/status';
 
 sub new {
