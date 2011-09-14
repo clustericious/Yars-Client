@@ -69,6 +69,9 @@ sub download {
     }
     ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
 
+    my $direct = $self->_server_for($md5) or LOGDIE "no server for $md5";
+    $self->server_url($direct);
+
     my $content =                  $url ? $self->_doit( GET => $url )
        : $self->server_type eq 'RESTAS' ? $self->retrieve( $filename, $md5 )
        :                                  $self->retrieve( $md5, $filename );
