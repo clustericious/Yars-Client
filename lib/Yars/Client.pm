@@ -37,7 +37,7 @@ route 'welcome'        => "GET",  '/';
 route 'bucket_map'     => "GET",  '/bucket_map';
 route 'disk_usage'     => "GET",  '/disk/usage';
 route 'servers_status' => "GET",  '/servers/status';
-route 'retrieve'       => "GET",  '/file', \"<md5> <filename>";
+route 'get'            => "GET",  '/file', \"<md5> <filename>";
 route 'check'          => "HEAD", '/file', \"<md5> <filename>";
 route 'set_status'     => "POST", '/disk/status';
 
@@ -81,8 +81,8 @@ sub download {
     $self->server_url($direct);
 
     my $content =                  $url ? $self->_doit( GET => $url )
-       : $self->server_type eq 'RESTAS' ? $self->retrieve( $filename, $md5 )
-       :                                  $self->retrieve( $md5, $filename );
+       : $self->server_type eq 'RESTAS' ? $self->get( $filename, $md5 )
+       :                                  $self->get( $md5, $filename );
     return '' if $self->errorstring;
     my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
     DEBUG "Writing to $out_file";
@@ -235,7 +235,7 @@ Yars::Client (Yet Another REST Server Client)
  $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
 
  # Get the content of a file.
- my $content = $r->retrieve($filename,$md5);
+ my $content = $r->get($filename,$md5);
 
  # Delete a file.
  $r->remove($filename, $md5) or die $r->errorstring;

@@ -35,10 +35,10 @@ is $r->res->headers->location, $r->location("welcome","0bb3c30dc72e63881db5005f1
 ok $r->upload( $Bin . '/../data/welcome' ), "uploaded same file";
 ok $r->res->is_status_class(200), "Yars (201) or RESTAS (200)";
 
-like $r->retrieve('welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), qr/^welcome/, 'retrieve file';
+like $r->get('welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), qr/^welcome/, 'get file';
 diag $r->errorstring;
-ok !$r->retrieve('Fred','yabbadabba');
-is $r->res->code, 404, 'retrieve bogus file';
+ok !$r->get('Fred','yabbadabba');
+is $r->res->code, 404, 'get bogus file';
 
 my $temp_dir = File::Temp->newdir;
 ok $r->download( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3', $temp_dir ), "download";

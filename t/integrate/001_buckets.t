@@ -54,8 +54,8 @@ for (0..20) {
 
     ok defined($location), "got a location";
     my $tempdir = File::Temp->newdir;
-    my $content_back = $c->retrieve($filename,$md5);
-    ok $content_back, 'retrieve succeeded';
+    my $content_back = $c->get($filename,$md5);
+    ok $content_back, 'get succeeded';
     is $content_back, $content, "got content back";
     ok $c->download($filename,$md5,"$tempdir"), "download succeeded";
     diag $c->errorstring if $c->errorstring;
