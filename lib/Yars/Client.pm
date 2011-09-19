@@ -113,6 +113,7 @@ sub remove {
 sub _server_for {
     my $self = shift;
     my $md5 = shift;
+    return $self->server_url if $self->server_type eq 'RESTAS';
     my $bucket_map = $self->bucket_map_cached;
     unless ($bucket_map) {
         $bucket_map = $self->bucket_map;
