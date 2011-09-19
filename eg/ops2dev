@@ -1,0 +1,111 @@
+#!/usr/bin/env perl
+
+# Copy files from ops to dev
+
+use 5.10.0;
+use YAML::XS;
+use Data::Dumper;
+use Yars::Client;
+use Mojo::Asset::File;
+use Mojo::ByteStream qw/b/;
+use IO::Uncompress::Gunzip qw/gunzip/;
+
+my $got = YAML::XS::Load(join '', <DATA>);
+# print Dumper($got);
+
+my $y = Yars::Client->new();
+$y->client->log->level("TRACE");
+my $ua = Mojo::UserAgent->new();
+my $url = sub {
+    my ( $md5, $filename ) = @_;
+    "https://omisips1.omisips.eosdis.nasa.gov:8000/data/$md5/$filename";
+};
+
+for (@{ $got->{inputfiles} }) {
+    next if $y->check($_->{hash}, $_->{filename});
+    warn ( $url->($_->{hash},$_->{filename}) );
+    my $tx = $ua->get( $url->($_->{hash},$_->{filename}) );
+    my $res = $tx->success or die $tx->error;
+    my $content = $tx->success->body;
+    if ($res->headers->header("Content-Encoding") eq 'gzip') {
+        my $new;
+        gunzip \$content => \$new;
+        $content = $new;
+    }
+#    if (my $ck = $res->headers->header("Content-MD5")) {
+#        die "wrong md5, got $ck, not $_->{hash}";
+#    }
+    Mojo::Asset::File->new(path => "/tmp/out")->add_chunk($content)->move_to("/tmp/out");;
+    my $md5 = b($content)->md5_sum;
+    die "wrong md5 $md5 vs $_->{hash}" unless $md5 eq $_->{hash};
+    warn "got ".length($content)." bytes";
+    #warn "$content";
+    $y->put($_->{filename},$content) or warn $y->errorstring;
+}
+
+__DATA__
+inputfiles:
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1031t2227-o33489_v003-2010m1101t063811.he5
+  hash: 4aaa96c3ab054218bbd4543284ba1dc9
+  seq: 1
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t0006-o33490_v003-2010m1101t063818.he5
+  hash: f83b86896fa0de0365168fddc58c7655
+  seq: 2
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t0145-o33491_v003-2010m1101t080658.he5
+  hash: 750875ce1a073a2cf9f2ad56a76e2059
+  seq: 3
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t0323-o33492_v003-2010m1101t093043.he5
+  hash: f7aa12a7278959ec962a1c45a1820b99
+  seq: 4
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t0502-o33493_v003-2010m1101t113048.he5
+  hash: bbb938f5529bd0353155fbc243908632
+  seq: 5
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t0641-o33494_v003-2010m1101t153311.he5
+  hash: d3d0ac2ca60d9912ba6f5c3dd84441ac
+  seq: 6
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t0820-o33495_v003-2010m1101t153312.he5
+  hash: e70e2e2c78628f02b79bee3026898943
+  seq: 7
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t0959-o33496_v003-2010m1101t164715.he5
+  hash: 08e84c366aac67606bffcf008a38b662
+  seq: 8
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t1138-o33497_v003-2010m1101t183321.he5
+  hash: 8159f534eff446c3cad08970aced6150
+  seq: 9
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t1317-o33498_v003-2010m1101t200439.he5
+  hash: 9fef2445e92cf8d916e774deffc0bafa
+  seq: 10
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t1456-o33499_v003-2010m1101t230105.he5
+  hash: 31456768d8e42a9478c9c76dd767d5fb
+  seq: 11
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t1635-o33500_v003-2010m1102t003512.he5
+  hash: cb9ef7ec4faeadcf167a093ff9343a3f
+  seq: 12
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t1813-o33501_v003-2010m1102t003511.he5
+  hash: b505426e878bd02aa698979ca3f9b789
+  seq: 13
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t1952-o33502_v003-2010m1102t020638.he5
+  hash: b4ad1b141db9231bce989d4ee994ac65
+  seq: 14
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t2131-o33503_v003-2010m1102t033904.he5
+  hash: aaecc9d045de2da33b0e6ac22074dcf8
+  seq: 15
+- esdt: OMSO2
+  filename: OMI-Aura_L2-OMSO2_2010m1101t2310-o33504_v003-2010m1102t063348.he5
+  hash: 501ca5cf331800671e3619bcdc75ac19
+  seq: 16
