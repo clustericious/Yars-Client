@@ -56,6 +56,16 @@ ok !$r->check( 'welcome', '1bb3c30dc72e63881db5005f1aa19ac3'), 'check worked';
 ok $r->remove( 'welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), "called remove";
 is ($r->res->code, 200, 'status was 200');
 
+{
+my $content = "hello there this is some content";
+my $md5 = b($content)->md5_sum;
+ok $r->put("myfile.txt", $content);
+ok $r->check("myfile.txt",$md5), "checked content";
+is $r->get($md5,"myfile.txt"), $content, "got content back";
+ok $r->remove("myfile.txt", $md5), "removed $md5";
+diag $r->res->error;
+}
+
 done_testing();
 
 1;

@@ -127,6 +127,16 @@ sub _server_for {
     LOGDIE "Can't find url for $md5 in bucket map : ".Dumper($bucket_map);
 }
 
+sub put {
+    my $self = shift;
+    my $filename = shift;
+    my $content = shift || join '', <STDIN>;
+    my $url = $self->_get_url("/file/$filename");
+    my $tx = $self->client->put($url => {} => $content);
+    $self->res($tx->res);
+    return $tx->success ? 'ok' : '';
+}
+
 sub upload {
     my ( $self, $filename ) = @_;
 
@@ -236,6 +246,9 @@ Yars::Client (Yet Another REST Server Client)
 
  # Get the content of a file.
  my $content = $r->get($filename,$md5);
+
+ # Put some content to a filename.
+ my $content = $r->put($filename,$content);
 
  # Delete a file.
  $r->remove($filename, $md5) or die $r->errorstring;

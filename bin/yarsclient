@@ -47,8 +47,11 @@ B<yarsclient> - Upload, download, and delete files to Yars.
     # Get the file back, write it to the current directory.
     yarsclient download <filename> <md5>
 
+    # Put some content to somefilename.txt
+    echo 'some content' | yarsclient put somefilename.txt
+
     # Get just the content back to stdout.
-    yarsclient retrieve <filename> <md5>
+    yarsclient get <filename> <md5>
 
     # Delete the file from Yars.
     yarsclient remove <filename> <md5>
