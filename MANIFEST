@@ -1,5 +1,6 @@
 bin/yarsclient
 Build.PL
+eg/ops2dev
 eg/up_and_download.pl
 eg/Yars.conf
 lib/Yars/Client.pm
