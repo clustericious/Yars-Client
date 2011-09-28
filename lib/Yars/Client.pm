@@ -18,8 +18,8 @@ use feature qw(say);
 
 our $VERSION = '0.37';
 
-# max downloads of 1 GB
-$ENV{MOJO_MAX_MESSAGE_SIZE} = 1073741824;
+# default max of 4 GB
+$ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1073741824 * 4;
 
 Clustericious::Client::Meta->add_route( "Yars::Client",
     upload => "<filename> [md5]" );
