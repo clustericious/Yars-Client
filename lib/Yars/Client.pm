@@ -16,10 +16,10 @@ use Log::Log4perl qw(:easy);
 use Data::Dumper;
 use feature qw(say);
 
-our $VERSION = '0.37';
+our $VERSION = '0.38';
 
 # default max of 4 GB
-$ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1073741824 * 4;
+$ENV{MOJO_MAX_MESSAGE_SIZE} ||= 10.3841824 * 4;
 
 Clustericious::Client::Meta->add_route( "Yars::Client",
     upload => "<filename> [md5]" );
