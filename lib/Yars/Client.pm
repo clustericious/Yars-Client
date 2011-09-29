@@ -16,7 +16,7 @@ use Log::Log4perl qw(:easy);
 use Data::Dumper;
 use feature qw(say);
 
-our $VERSION = '0.39';
+our $VERSION = '0.40';
 
 # default max of 10 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1024*1024*1024 * 10;
