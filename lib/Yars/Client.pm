@@ -62,6 +62,8 @@ sub location {
     my ($self, $filename, $md5) = @_;
 
     ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
+    LOGDIE "Can't compute location without filename" unless defined($filename);
+    LOGDIE "Can't compute location without md5" unless $md5;
     $self->server_url($self->_server_for($md5));
     return $self->_get_url("/file/$md5/$filename")->to_abs->to_string;
 }
@@ -77,7 +79,11 @@ sub download {
     }
     ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
 
+    if (!$md5 && !$url) {
+        LOGDIE "Need either an md5 or a url: download(url) or download(filename, md5, [dir] )";
+    }
     unless ($url) {
+        LOGDIE "Missing md5" unless $md5;
         my $direct = $self->_server_for($md5) or LOGDIE "no server for $md5";
         $self->server_url($direct);
     }
@@ -114,7 +120,7 @@ sub remove {
 # using a cached list of bucket->server assignments.
 sub _server_for {
     my $self = shift;
-    my $md5 = shift;
+    my $md5 = shift or LOGDIE "Missing argument md5";
     return $self->server_url if $self->server_type eq 'RESTAS';
     my $bucket_map = $self->bucket_map_cached;
     unless ($bucket_map) {
