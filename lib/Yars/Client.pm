@@ -182,7 +182,7 @@ sub upload {
         $tx->req->content->asset($asset);
         $tx = $self->client->start($tx);
         if ( my ($message, $code) = $tx->error ) {
-            ERROR ($code // '')." $message";
+            ERROR (($code // '')." $message");
             $self->res($tx->res);
             return '';
         }
