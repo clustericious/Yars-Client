@@ -13,8 +13,9 @@ use Mojo::Base '-base';
 use File::Basename;
 use File::Spec;
 use Log::Log4perl qw(:easy);
+use Digest::file qw/digest_file_hex/;
 use Data::Dumper;
-use feature qw(say);
+use 5.10.0;
 
 our $VERSION = '0.40';
 
@@ -152,11 +153,10 @@ sub upload {
     $filename = File::Spec->rel2abs($filename);
     -r $filename or LOGDIE "Could not read " . $filename;
 
-    # Read the file
+    # Don't read the file.
     my $basename = basename($filename);
     my $asset    = Mojo::Asset::File->new( path => $filename );
-    my $content  = $asset->slurp;
-    my $md5      = b($content)->md5_sum;
+    my $md5      = digest_file_hex($filename, 'MD5');
 
     my $url;
     my $tx;
@@ -178,9 +178,11 @@ sub upload {
     if ( !$tx ) {
         # Either we have a Yars server or the head_check was negative
 
-        $tx = $self->client->put( $url => $content );
+        $tx = $self->client->build_tx( PUT => $url );
+        $tx->req->content->asset($asset);
+        $tx = $self->client->start($tx);
         if ( my ($message, $code) = $tx->error ) {
-            defined $code ? ERROR "$code $message" : ERROR $message;
+            ERROR ($code // '')." $message";
             $self->res($tx->res);
             return '';
         }
