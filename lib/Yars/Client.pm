@@ -87,16 +87,24 @@ sub download {
         LOGDIE "Missing md5" unless $md5;
         my $direct = $self->_server_for($md5) or LOGDIE "no server for $md5";
         $self->server_url($direct);
+        $url = $self->location($md5,$filename);
     }
 
-    my $content =                  $url ? $self->_doit( GET => $url )
-       : $self->server_type eq 'RESTAS' ? $self->get( $filename, $md5 )
-       :                                  $self->get( $md5, $filename );
-    return '' if $self->errorstring;
+    my $tx = $self->client->get( $url );
+    if (my ($msg,$code) = $tx->error) {
+        ERROR (($code // '')." $msg");
+        return '';
+    }
+
     my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
     DEBUG "Writing to $out_file";
-    Mojo::Asset::File->new->add_chunk($content)->move_to($out_file);
-    return 'ok';
+    $tx->res->content->asset->move_to($out_file);
+    my $verify = digest_file_hex($out_file,'MD5');
+    unless ($verify eq $md5) {
+        unlink $out_file or LOGDIE "couldn't remove $out_file : $!";
+        LOGDIE "Bad md5 for file (got $verify instead of $md5)";
+    }
+    return 'ok'; # return TRUE
 }
 
 sub remove {
