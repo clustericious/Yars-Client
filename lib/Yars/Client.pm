@@ -90,6 +90,7 @@ sub download {
         $url = $self->location($md5,$filename);
     }
 
+    TRACE "GET $url";
     my $tx = $self->client->get( $url );
     if (my ($msg,$code) = $tx->error) {
         ERROR (($code // '')." $msg");
