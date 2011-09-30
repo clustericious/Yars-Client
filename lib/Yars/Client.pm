@@ -101,6 +101,8 @@ sub download {
     DEBUG "Writing to $out_file";
     $tx->res->content->asset->move_to($out_file);
     my $verify = digest_file_hex($out_file,'MD5');
+    $md5 ||= $tx->res->headers->header("Content-MD5");
+    LOGDIE "No md5 in response header" unless $md5;
     unless ($verify eq $md5) {
         unlink $out_file or LOGDIE "couldn't remove $out_file : $!";
         LOGDIE "Bad md5 for file (got $verify instead of $md5)";
