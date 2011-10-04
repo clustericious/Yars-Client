@@ -7,7 +7,7 @@ use strict;
 
 my @filenames;
 my @md5s;
-my $how_many = 100;
+my $how_many = $ARGV[0] || 100;
 
 mkdir 'files';
 for (1..$how_many) {

@@ -149,10 +149,14 @@ sub _server_for {
 
 sub put {
     my $self = shift;
-    my $filename = shift;
+    my $remote_filename = shift;
     my $content = shift || join '', <STDIN>;
-    my $url = $self->_get_url("/file/$filename");
-    my $tx = $self->client->put($url => {} => $content);
+    # NB: slow for large content.
+    my $md5 = b($content->md5_sum);
+    TRACE "md5 $md5";
+    my $url = $self->_get_url("/file/$remote_filename");
+    TRACE "PUT $url";
+    my $tx = $self->client->put($url => { "Content-MD5" => $md5 } => $content);
     $self->res($tx->res);
     return $tx->success ? 'ok' : '';
 }
@@ -189,7 +193,7 @@ sub upload {
     if ( !$tx ) {
         # Either we have a Yars server or the head_check was negative
 
-        $tx = $self->client->build_tx( PUT => $url );
+        $tx = $self->client->build_tx( PUT => $url => { "Content-MD5" => $md5 } );
         $tx->req->content->asset($asset);
         $tx = $self->client->start($tx);
         if ( my ($message, $code) = $tx->error ) {
