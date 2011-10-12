@@ -45,6 +45,7 @@ route 'set_status'     => "POST", '/disk/status';
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
+    $self->client->ioloop->connection_timeout(600);
     return $self;
 }
 
@@ -152,7 +153,7 @@ sub put {
     my $remote_filename = shift;
     my $content = shift || join '', <STDIN>;
     # NB: slow for large content.
-    my $md5 = b($content->md5_sum);
+    my $md5 = b($content)->md5_sum;
     TRACE "md5 $md5";
     my $url = $self->_get_url("/file/$remote_filename");
     TRACE "PUT $url";
