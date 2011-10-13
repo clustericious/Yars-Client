@@ -157,7 +157,7 @@ sub put {
     TRACE "md5 $md5";
     my $url = $self->_get_url("/file/$remote_filename");
     TRACE "PUT $url";
-    my $tx = $self->client->put($url => { "Content-MD5" => $md5 } => $content);
+    my $tx = $self->client->put($url => { "Content-MD5" => $md5, "Connection" => "Close" } => $content);
     $self->res($tx->res);
     return $tx->success ? 'ok' : '';
 }
@@ -194,7 +194,7 @@ sub upload {
     if ( !$tx ) {
         # Either we have a Yars server or the head_check was negative
 
-        $tx = $self->client->build_tx( PUT => $url => { "Content-MD5" => $md5 } );
+        $tx = $self->client->build_tx( PUT => $url => { "Content-MD5" => $md5, "Connection" => "Close" } );
         $tx->req->content->asset($asset);
         $tx = $self->client->start($tx);
         if ( my ($message, $code) = $tx->error ) {
