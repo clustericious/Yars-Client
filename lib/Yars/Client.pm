@@ -17,7 +17,7 @@ use Digest::file qw/digest_file_hex/;
 use Data::Dumper;
 use 5.10.0;
 
-our $VERSION = '0.45';
+our $VERSION = '0.46';
 
 # default max of 10 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1024*1024*1024 * 10;
