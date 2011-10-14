@@ -93,7 +93,7 @@ sub download {
     }
 
     TRACE "GET $url";
-    my $tx = $self->client->get( $url );
+    my $tx = $self->client->get( $url, { "Connection" => "Close" } );
     if (my ($msg,$code) = $tx->error) {
         ERROR (($code // '')." $msg");
         return '';
