@@ -69,6 +69,10 @@ B<yarsclient> - Upload, download, and delete files to Yars.
     # Mark a disk up
     yarsclient set_status --host http://yars_host_with_f1010.nasa.gov:9309 --disk /acps/f101 --state up
 
+    # Check a manifest file
+    yarclient check_manifest /my/dir/MANIFEST
+    yarclient check_manifest -c /my/dir/MANIFEST
+
 =head1 DESCRIPTION
 
 Command-line interface to Yars::Client.  Client for Yars.

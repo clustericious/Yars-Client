@@ -250,15 +250,6 @@ sub status {
     }
 }
 
-=item check_manifest
-
-Given a file with one md5 and filename per line, check
-for their existence in yars.  Pass "-c" as the first
-argument to only report ok or not ok, otherwise a list
-of missing files, and a count of found files will be returned.
-
-=cut
-
 sub check_manifest {
     my $self     = shift;
     my $check    = shift if $_[0] eq '-c';
@@ -316,6 +307,10 @@ Yars::Client (Yet Another REST Server Client)
 
  # Mark a disk up.
  my $ok = $r->set_status({ root => "/acps/disk/one", state => "up" });
+
+ # Check a manifest file
+ my $details = $r->check_manifest( $filename );
+ my $check = $r->check_manifest( "-c", $filename );
 
 =head1 DESCRIPTION
 
