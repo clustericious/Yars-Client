@@ -46,6 +46,7 @@ sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
     $self->client->ioloop->connection_timeout(600);
+    $self->client->ioloop->connect_timeout(20);
     return $self;
 }
 
@@ -247,6 +248,28 @@ sub status {
             return;
         }
     }
+}
+
+=item check_manifest
+
+Given a file with one md5 and filename per line, check
+for their existence in yars.  Pass "-c" as the first
+argument to only report ok or not ok, otherwise a list
+of missing files, and a count of found files will be returned.
+
+=cut
+
+sub check_manifest {
+    my $self     = shift;
+    my $check    = shift if $_[0] eq '-c';
+    my $manifest = shift;
+    LOGDIE "Missing manifest" unless $manifest;
+    LOGDIE "Cannot open manifest" unless -e $manifest;
+    my $contents = Mojo::Asset::File->new(path => $manifest)->slurp;
+    my $got      = $self->_doit(POST => "/check/manifest", { manifest => $contents  });
+    $got->{$manifest} = (@{$got->{missing}}==0 ? 'ok' : 'not ok');
+    return { $manifest => $got->{$manifest} } if $check;
+    return $got;
 }
 
 1;
