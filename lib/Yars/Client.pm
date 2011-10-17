@@ -41,6 +41,7 @@ route 'servers_status' => "GET",  '/servers/status';
 route 'get'            => "GET",  '/file', \"<md5> <filename>";
 route 'check'          => "HEAD", '/file', \"<md5> <filename>";
 route 'set_status'     => "POST", '/disk/status';
+route 'check_files'    => "POST", '/check/manifest';
 
 sub new {
     my $self = shift->SUPER::new(@_);
@@ -308,9 +309,13 @@ Yars::Client (Yet Another REST Server Client)
  # Mark a disk up.
  my $ok = $r->set_status({ root => "/acps/disk/one", state => "up" });
 
- # Check a manifest file
+ # Check a manifest file or list of files.
  my $details = $r->check_manifest( $filename );
  my $check = $r->check_manifest( "-c", $filename );
+ my $ck = $r->check_files({ files => [
+     { filename => $f1, md5 => $m1 },
+     { filename => $f2, md5 => $m2 } ] });
+
 
 =head1 DESCRIPTION
 
