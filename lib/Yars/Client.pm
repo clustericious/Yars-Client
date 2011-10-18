@@ -62,6 +62,19 @@ sub _get_url {
     return $url;
 }
 
+sub _hex2b64 {
+    my $hex = shift or return;
+    my $b64 = b(pack 'H*', $hex)->b64_encode;
+    local $/="\n";
+    chomp $b64;
+    return $b64;
+}
+
+sub _b642hex {
+    my $b64 = shift or return;
+    return unpack 'H*', b($b64)->b64_decode;
+}
+
 sub location {
     my ($self, $filename, $md5) = @_;
 
@@ -104,7 +117,7 @@ sub download {
     DEBUG "Writing to $out_file";
     $tx->res->content->asset->move_to($out_file);
     my $verify = digest_file_hex($out_file,'MD5');
-    $md5 ||= $tx->res->headers->header("Content-MD5");
+    $md5 ||= _b642hex($tx->res->headers->header("Content-MD5"));
     LOGDIE "No md5 in response header" unless $md5;
     unless ($verify eq $md5) {
         unlink $out_file or LOGDIE "couldn't remove $out_file : $!";
@@ -155,11 +168,10 @@ sub put {
     my $remote_filename = shift;
     my $content = shift || join '', <STDIN>;
     # NB: slow for large content.
-    my $md5 = b($content)->md5_sum;
-    TRACE "md5 $md5";
+    chmop (my $md5_b64 = b($content)->md5_bytes->b64_encode);
     my $url = $self->_get_url("/file/$remote_filename");
     TRACE "PUT $url";
-    my $tx = $self->client->put($url => { "Content-MD5" => $md5, "Connection" => "Close" } => $content);
+    my $tx = $self->client->put($url => { "Content-MD5" => $md5_b64, "Connection" => "Close" } => $content);
     $self->res($tx->res);
     return $tx->success ? 'ok' : '';
 }
@@ -196,7 +208,7 @@ sub upload {
     if ( !$tx ) {
         # Either we have a Yars server or the head_check was negative
 
-        $tx = $self->client->build_tx( PUT => $url => { "Content-MD5" => $md5, "Connection" => "Close" } );
+        $tx = $self->client->build_tx( PUT => $url => { "Content-MD5" => _hex2b64($md5), "Connection" => "Close" } );
         $tx->req->content->asset($asset);
         $tx = $self->client->start($tx);
         if ( my ($message, $code) = $tx->error ) {
