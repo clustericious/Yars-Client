@@ -5,10 +5,10 @@ Lightweight alternative to RESTAS that uses the Clustericious framework.
 
 Install the package:
 
-	perl Build.PL
-	./Build
-	./Build test
-	./Build install
+    perl Build.PL
+    ./Build
+    ./Build test
+    ./Build install
 
 
 
