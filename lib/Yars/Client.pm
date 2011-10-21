@@ -72,6 +72,8 @@ sub _hex2b64 {
 
 sub _b642hex {
     my $b64 = shift or return;
+    # Mojo::Headers apparently become array refs sometimes
+    $b64 = $b64->[0] if ref($b64) eq 'ARRAY';
     return unpack 'H*', b($b64)->b64_decode;
 }
 
