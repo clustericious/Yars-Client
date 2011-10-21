@@ -45,4 +45,3 @@ chdir '..';
 
 system 'diff -r files/ got/';
 
-
