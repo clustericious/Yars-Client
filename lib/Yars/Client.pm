@@ -15,6 +15,7 @@ use File::Spec;
 use Log::Log4perl qw(:easy);
 use Digest::file qw/digest_file_hex/;
 use Data::Dumper;
+use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 use 5.10.0;
 
 our $VERSION = '0.51';
@@ -109,17 +110,33 @@ sub download {
     }
 
     TRACE "GET $url";
-    my $tx = $self->client->get( $url, { "Connection" => "Close" } );
+    my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
     if (my ($msg,$code) = $tx->error) {
         ERROR (($code // '')." $msg");
         return '';
     }
+    my $res = $tx->success or LOGDIE $tx->error;
 
     my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
     DEBUG "Writing to $out_file";
-    $tx->res->content->asset->move_to($out_file);
+    if (my $e = $res->headers->header("Content-Encoding")) {
+        LOGDIE "unsupported encoding" unless $e eq 'gzip';
+        # This violate the spec (MD5s depend on transfer-encoding
+        # not content-encoding, per
+        # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+        # but we must support it.
+        TRACE "unzipping $out_file";
+        my $asset = $res->content->asset;
+        gunzip($asset->is_file ? $asset->handle : \( $asset->slurp )
+             => $out_file) or do {
+            unlink $out_file;
+            LOGDIE "Gunzip failed : $GunzipError";
+        };
+    } else {
+        $res->content->asset->move_to($out_file);
+    }
     my $verify = digest_file_hex($out_file,'MD5');
-    $md5 ||= _b642hex($tx->res->headers->header("Content-MD5"));
+    $md5 ||= _b642hex($res->headers->header("Content-MD5"));
     LOGDIE "No md5 in response header" unless $md5;
     unless ($verify eq $md5) {
         unlink $out_file or LOGDIE "couldn't remove $out_file : $!";
