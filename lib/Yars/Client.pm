@@ -187,7 +187,7 @@ sub put {
     my $remote_filename = shift;
     my $content = shift || join '', <STDIN>;
     # NB: slow for large content.
-    chmop (my $md5_b64 = b($content)->md5_bytes->b64_encode);
+    chomp (my $md5_b64 = b($content)->md5_bytes->b64_encode);
     my $url = $self->_get_url("/file/$remote_filename");
     TRACE "PUT $url";
     my $tx = $self->client->put($url => { "Content-MD5" => $md5_b64, "Connection" => "Close" } => $content);
