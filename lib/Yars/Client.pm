@@ -187,10 +187,12 @@ sub put {
     my $remote_filename = shift;
     my $content = shift || join '', <STDIN>;
     # NB: slow for large content.
-    chomp (my $md5_b64 = b($content)->md5_bytes->b64_encode);
-    my $url = $self->_get_url("/file/$remote_filename");
+    my $md5 = b($content)->md5_sum;
+    my $md5_b64 = _hex2b64($md5);
+    my $url = Mojo::URL->new($self->_server_for($md5));
+    $url->path("/file/$remote_filename");
     TRACE "PUT $url";
-    my $tx = $self->client->put($url => { "Content-MD5" => $md5_b64, "Connection" => "Close" } => $content);
+    my $tx = $self->client->put("$url" => { "Content-MD5" => $md5_b64, "Connection" => "Close" } => $content);
     $self->res($tx->res);
     return $tx->success ? 'ok' : '';
 }
@@ -227,7 +229,7 @@ sub upload {
     if ( !$tx ) {
         # Either we have a Yars server or the head_check was negative
 
-        $tx = $self->client->build_tx( PUT => $url => { "Content-MD5" => _hex2b64($md5), "Connection" => "Close" } );
+        $tx = $self->client->build_tx( PUT => "$url" => { "Content-MD5" => _hex2b64($md5), "Connection" => "Close" } );
         $tx->req->content->asset($asset);
         $tx = $self->client->start($tx);
         if ( my ($message, $code) = $tx->error ) {
