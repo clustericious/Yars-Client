@@ -1,5 +1,7 @@
 bin/yarsclient
 Build.PL
+eg/create_yars_test_files.pl
+eg/lots.pl
 eg/ops2dev
 eg/up_and_download.pl
 eg/Yars.conf
