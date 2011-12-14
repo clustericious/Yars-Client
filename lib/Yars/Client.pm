@@ -127,7 +127,7 @@ sub download {
         # but we must support it.
         TRACE "unzipping $out_file";
         my $asset = $res->content->asset;
-        gunzip($asset->is_file ? $asset->handle : \( $asset->slurp )
+        gunzip($asset->is_file ? $asset->path : \( $asset->slurp )
              => $out_file) or do {
             unlink $out_file;
             LOGDIE "Gunzip failed : $GunzipError";
