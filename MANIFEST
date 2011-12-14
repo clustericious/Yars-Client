@@ -1,5 +1,6 @@
 bin/yarsclient
 Build.PL
+eg/async-put.pl
 eg/create_yars_test_files.pl
 eg/lots.pl
 eg/ops2dev
