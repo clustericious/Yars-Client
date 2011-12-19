@@ -3,6 +3,7 @@ package Yars::Client;
 use strict;
 use warnings;
 
+use Mojolicious;
 use Clustericious::Client;
 use Clustericious::Client::Command;
 use Clustericious::Config;
@@ -47,8 +48,12 @@ route 'check_files'    => "POST", '/check/manifest';
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
-    $self->client->ioloop->connection_timeout(600);
-    $self->client->ioloop->connect_timeout(20);
+    if ($Mojolicious::VERSION >= 2.37) {
+        Mojo::IOLoop::Stream->timeout(600)
+    } else {
+        $self->client->ioloop->connection_timeout(600);
+        $self->client->ioloop->connect_timeout(20);
+    }
     return $self;
 }
 
