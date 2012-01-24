@@ -114,39 +114,64 @@ sub download {
         $url = $self->location($md5,$filename);
     }
 
-    TRACE "GET $url";
-    my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
-    if (my ($msg,$code) = $tx->error) {
-        ERROR (($code // '')." $msg");
-        return '';
-    }
-    my $res = $tx->success or LOGDIE $tx->error;
+    my $tries = 0;
+    my $success = 0;
+    while ($tries++ < 10) {
 
-    my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
-    DEBUG "Writing to $out_file";
-    if (my $e = $res->headers->header("Content-Encoding")) {
-        LOGDIE "unsupported encoding" unless $e eq 'gzip';
-        # This violate the spec (MD5s depend on transfer-encoding
-        # not content-encoding, per
-        # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        # but we must support it.
-        TRACE "unzipping $out_file";
-        my $asset = $res->content->asset;
-        gunzip($asset->is_file ? $asset->path : \( $asset->slurp )
-             => $out_file) or do {
-            unlink $out_file;
-            LOGDIE "Gunzip failed : $GunzipError";
+        if ($tries > 1) {
+            TRACE "Attempt $tries";
+            WARN "Waiting $tries seconds before retrying...";
+            sleep $tries;
+        }
+        TRACE "GET $url";
+        my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
+        if (my ($msg,$code) = $tx->error) {
+            ERROR (($code // '')." $msg");
+            # Legitimate server error, bail out.
+            last;
+        }
+        my $res = $tx->success or do {
+            # timeout?  Try again.
+            WARN "Error : ".$tx->error;
+            next;
         };
-    } else {
-        $res->content->asset->move_to($out_file);
+
+        my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
+        DEBUG "Writing to $out_file";
+        if (my $e = $res->headers->header("Content-Encoding")) {
+            LOGDIE "unsupported encoding" unless $e eq 'gzip';
+            # This violate the spec (MD5s depend on transfer-encoding
+            # not content-encoding, per
+            # http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+            # but we must support it.
+            TRACE "unzipping $out_file";
+            my $asset = $res->content->asset;
+            gunzip($asset->is_file ? $asset->path : \( $asset->slurp )
+                 => $out_file) or do {
+                unlink $out_file;
+                LOGDIE "Gunzip failed : $GunzipError";
+            };
+        } else {
+            $res->content->asset->move_to($out_file);
+        }
+        my $verify = digest_file_hex($out_file,'MD5');
+        $md5 ||= _b642hex($res->headers->header("Content-MD5"));
+
+        unless ($md5) {
+            WARN "No md5 in response header";
+            next;
+        }
+        unless ($verify eq $md5) {
+            WARN "Bad md5 for file (got $verify instead of $md5)";
+            WARN "Response : ".$res->to_string;
+            unlink $out_file or WARN "couldn't remove $out_file : $!";
+            next;
+        }
+
+        $success = 1;
+        last;
     }
-    my $verify = digest_file_hex($out_file,'MD5');
-    $md5 ||= _b642hex($res->headers->header("Content-MD5"));
-    LOGDIE "No md5 in response header" unless $md5;
-    unless ($verify eq $md5) {
-        unlink $out_file or LOGDIE "couldn't remove $out_file : $!";
-        LOGDIE "Bad md5 for file (got $verify instead of $md5)";
-    }
+    return '' unless $success;
     return 'ok'; # return TRUE
 }
 
