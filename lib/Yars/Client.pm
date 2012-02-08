@@ -45,6 +45,8 @@ route 'check'          => "HEAD", '/file', \"<md5> <filename>";
 route 'set_status'     => "POST", '/disk/status';
 route 'check_files'    => "POST", '/check/manifest';
 
+route_meta 'bucket_map' => { auto_failover => 1 };
+
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
