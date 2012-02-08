@@ -41,7 +41,11 @@ route 'check'          => "HEAD", '/file', \"<md5> <filename>";
 route 'set_status'     => "POST", '/disk/status';
 route 'check_files'    => "POST", '/check/manifest';
 
-route_meta 'bucket_map' => { auto_failover => 1 };
+route_meta 'welcome'        => { auto_failover => 1 };
+route_meta 'bucket_map'     => { auto_failover => 1 };
+route_meta 'servers_status' => { auto_failover => 1 };
+route_meta 'check'          => { auto_failover => 1 };
+route_meta 'disk_usage'     => { auto_failover => 1 };
 
 sub new {
     my $self = shift->SUPER::new(@_);
