@@ -24,14 +24,10 @@ our $VERSION = '0.57';
 # default max of 10 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1024*1024*1024 * 10;
 
-Clustericious::Client::Meta->add_route( "Yars::Client",
-    upload => "<filename> [md5]" );
-Clustericious::Client::Meta->add_route( "Yars::Client",
-    content => "<filename> <md5>" );
-Clustericious::Client::Meta->add_route( "Yars::Client",
-    download => "<filename> <md5> [dir]" );
-Clustericious::Client::Meta->add_route( "Yars::Client",
-    remove => "<filename> <md5>" );
+route_doc upload   => "<filename> [md5]";
+route_doc content  => "<filename> <md5>";
+route_doc download => "<filename> <md5> [dir]";
+route_doc remove   => "<filename> <md5>";
 
 has server_type => sub { shift->_config->server_type(default => 'Yars') };
 has bucket_map_cached  => sub { 0; }; # Computed on demand.
