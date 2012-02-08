@@ -108,9 +108,6 @@ sub download {
         LOGDIE "Need either an md5 or a url: download(url) or download(filename, md5, [dir] )";
     }
     unless ($url) {
-        LOGDIE "Missing md5" unless $md5;
-        my $direct = $self->_server_for($md5) or LOGDIE "no server for $md5";
-        $self->server_url($direct);
         $url = $self->location($md5,$filename);
     }
 
