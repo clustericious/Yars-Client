@@ -99,35 +99,42 @@ sub download {
     # Downloads a file and saves it to disk.
     my $self = shift;
     my ( $filename, $md5, $dest_dir ) = @_;
-    my $url;
+    my $abs_url;
     if (@_ == 1) {
-        $url = shift;
-        ($filename) = $url =~ m|/([^/]+)$|;
+        $abs_url = shift;
+        ($filename) = $abs_url =~ m|/([^/]+)$|;
     }
     ( $filename, $md5 ) = ( $md5, $filename ) if $filename =~ /^[0-9a-f]{32}$/i;
 
-    if (!$md5 && !$url) {
+    if (!$md5 && !$abs_url) {
         LOGDIE "Need either an md5 or a url: download(url) or download(filename, md5, [dir] )";
     }
-    unless ($url) {
-        $url = $self->location($md5,$filename);
-    }
 
+    my @hosts  = $self->_all_hosts($self->_server_for($md5));
     my $tries = 0;
     my $success = 0;
+    my $host = 0;
     while ($tries++ < 10) {
 
-        if ($tries > 1) {
+        if ($tries > 1 && ($tries-1) % @hosts == 0) {
             TRACE "Attempt $tries";
             WARN "Waiting $tries seconds before retrying...";
             sleep $tries;
+        }
+        my $url;
+        if ($abs_url) {
+            $url = $abs_url;
+        } else {
+            $host = 0 if $host > $#hosts;
+            $url = Mojo::URL->new($hosts[$host++]);
+            $url->path("/file/$filename/$md5");
         }
         TRACE "GET $url";
         my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
         if (my ($msg,$code) = $tx->error) {
             ERROR (($code // '')." $msg");
             # Legitimate server error, bail out.
-            last;
+            last if $code;
         }
         my $res = $tx->success or do {
             # timeout?  Try again.
@@ -203,6 +210,9 @@ sub _server_for {
         $bucket_map = $self->bucket_map;
         $self->bucket_map_cached($bucket_map);
     }
+    unless ($bucket_map) {
+        LOGDIE "Failed to retrieve bucket map";
+    }
     for (0..length($md5)) {
         my $prefix = substr($md5,0,$_);
         return $bucket_map->{ lc $prefix } if exists($bucket_map->{lc $prefix});
@@ -225,6 +235,19 @@ sub put {
     return $tx->success ? 'ok' : '';
 }
 
+sub _all_hosts {
+    my $self = shift;
+    my $assigned = shift;
+    # Return all the hosts, any parameter will be put first in
+    # the list.
+    my @servers = ($assigned);
+    push @servers, $self->server_url;
+    push @servers, $self->_config->url;
+    push @servers, @{ $self->_config->failover_urls(default => []) };
+    my %seen;
+    return grep { !$seen{$_}++ } @servers;
+}
+
 sub upload {
     my ( $self, $filename ) = @_;
 
@@ -241,13 +264,7 @@ sub upload {
         return 'ok' if $self->check($filename,$md5);
     }
 
-    my $assigned = $self->_server_for($md5);
-    my @servers = ($assigned);
-    push @servers, $self->server_url;
-    push @servers, $self->_config->url;
-    push @servers, @{ $self->_config->failover_urls(default => []) };
-    my %seen;
-    @servers = grep { !$seen{$_}++ } @servers;
+    my @servers = $self->_all_hosts( $self->_server_for($md5) );
 
     my $tx;
     my $code;
@@ -270,9 +287,9 @@ sub upload {
         $self->res($tx->res);
 
         if (!$code) {
-            WARN "PUT to $host failed : ".($tx->error || 'unknown error');
+            INFO "PUT to $host failed : ".($tx->error || 'unknown error');
         } elsif (my ($message, $code) = $tx->error ) {
-            WARN "Failed to reach $host $code $message";
+            INFO "Failed to reach $host $code $message";
         }
     }
     return '' if !$code || !$tx->res->is_status_class(200);
