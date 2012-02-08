@@ -217,11 +217,10 @@ sub put {
     my $content = shift || join '', <STDIN>;
     # NB: slow for large content.
     my $md5 = b($content)->md5_sum;
-    my $md5_b64 = _hex2b64($md5);
     my $url = Mojo::URL->new($self->_server_for($md5));
     $url->path("/file/$remote_filename");
     TRACE "PUT $url";
-    my $tx = $self->client->put("$url" => { "Content-MD5" => $md5_b64, "Connection" => "Close" } => $content);
+    my $tx = $self->client->put("$url" => { "Content-MD5" => _hex2b64($md5), "Connection" => "Close" } => $content);
     $self->res($tx->res);
     return $tx->success ? 'ok' : '';
 }
@@ -238,35 +237,45 @@ sub upload {
     my $asset    = Mojo::Asset::File->new( path => $filename );
     my $md5      = digest_file_hex($filename, 'MD5');
 
-    my $url;
+    if ($self->server_type eq 'RESTAS') {
+        return 'ok' if $self->check($filename,$md5);
+    }
+
+    my $assigned = $self->_server_for($md5);
+    my @servers = ($assigned);
+    push @servers, $self->server_url;
+    push @servers, $self->_config->url;
+    push @servers, @{ $self->_config->failover_urls(default => []) };
+    my %seen;
+    @servers = grep { !$seen{$_}++ } @servers;
+
     my $tx;
-    if ( $self->server_type eq 'RESTAS' ) {
+    my $code;
+    my $host;
 
-        # Workaround for RESTAS which sends a 409 instead of a 200 when
-        # putting a previously putted file.
-
-        $url = $self->_get_url("/file/$basename/$md5");
-        my $head_check = $self->client->head($url);
-        $tx = $head_check if $head_check->success;
-    } else {
-        my $assigned = $self->_server_for($md5);
-        $url = Mojo::URL->new($assigned);
+    while (!$code && ($host = shift @servers)) {
+        my $url = Mojo::URL->new($host);
         $url->path("/file/$basename/$md5");
         DEBUG "Sending $md5 to $url";
-    }
 
-    if ( !$tx ) {
-        # Either we have a Yars server or the head_check was negative
-
-        $tx = $self->client->build_tx( PUT => "$url" => { "Content-MD5" => _hex2b64($md5), "Connection" => "Close" } );
+        $tx = $self->client->build_tx(
+            PUT => "$url" => {
+                "Content-MD5" => _hex2b64($md5),
+                "Connection"  => "Close"
+            }
+        );
         $tx->req->content->asset($asset);
         $tx = $self->client->start($tx);
-        if ( my ($message, $code) = $tx->error ) {
-            ERROR (($code // '')." $message");
-            $self->res($tx->res);
-            return '';
+        $code = $tx->res->code;
+        $self->res($tx->res);
+
+        if (!$code) {
+            WARN "PUT to $host failed : ".($tx->error || 'unknown error');
+        } elsif (my ($message, $code) = $tx->error ) {
+            WARN "Failed to reach $host $code $message";
         }
     }
+    return '' if !$code || !$tx->res->is_status_class(200);
 
     DEBUG "Response : ".$tx->res->code." ".$tx->res->message;
     $self->res($tx->res);
