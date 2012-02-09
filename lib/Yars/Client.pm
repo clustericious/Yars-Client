@@ -110,7 +110,8 @@ sub download {
         LOGDIE "Need either an md5 or a url: download(url) or download(filename, md5, [dir] )";
     }
 
-    my @hosts  = $self->_all_hosts($self->_server_for($md5));
+    my @hosts;
+    @hosts  = $self->_all_hosts($self->_server_for($md5)) unless $abs_url;
     my $tries = 0;
     my $success = 0;
     my $host = 0;
