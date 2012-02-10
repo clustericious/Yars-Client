@@ -134,9 +134,12 @@ sub download {
         TRACE "GET $url";
         my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
         if (my ($msg,$code) = $tx->error) {
-            ERROR (($code // '')." $msg");
-            # Legitimate server error, bail out.
-            last if $code;
+            if ($code) {
+                ERROR "$code $msg";
+                # Legitimate server error, bail out.
+                last;
+            }
+            DEBUG "Got error : $msg";
         }
         my $res = $tx->success or do {
             # timeout?  Try again.
@@ -179,6 +182,7 @@ sub download {
         $success = 1;
         last;
     }
+    ERROR "Download failed after 10 tries." unless $success;
     return '' unless $success;
     return 'ok'; # return TRUE
 }
