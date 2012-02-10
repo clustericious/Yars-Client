@@ -358,6 +358,12 @@ sub check_manifest {
     return $got;
 }
 
+sub remote {
+    my $self = shift;
+    $self->bucket_map_cached(0);
+    $self->SUPER::remote(@_);
+}
+
 1;
 
 __END__
