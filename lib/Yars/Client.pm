@@ -213,12 +213,13 @@ sub _server_for {
     my $md5 = shift or LOGDIE "Missing argument md5";
     return $self->server_url if $self->server_type eq 'RESTAS';
     my $bucket_map = $self->bucket_map_cached;
-    unless ($bucket_map) {
-        $bucket_map = $self->bucket_map;
+    unless ($bucket_map && ref($bucket_map) eq 'HASH' && keys %$bucket_map > 0) {
+        $bucket_map = $self->bucket_map or WARN $self->errorstring;
         $self->bucket_map_cached($bucket_map);
     }
-    unless ($bucket_map) {
-        LOGDIE "Failed to retrieve bucket map";
+    unless ($bucket_map && ref $bucket_map && (keys %$bucket_map > 0)) {
+        WARN "Failed to retrieve bucket map";
+        return $self->server_url;
     }
     for (0..length($md5)) {
         my $prefix = substr($md5,0,$_);
