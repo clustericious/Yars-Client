@@ -182,7 +182,7 @@ sub download {
         $success = 1;
         last;
     }
-    ERROR "Download failed after 10 tries." unless $success;
+    ERROR "Download failed." unless $success;
     return '' unless $success;
     return 'ok'; # return TRUE
 }
