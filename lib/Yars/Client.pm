@@ -3,7 +3,6 @@ package Yars::Client;
 use strict;
 use warnings;
 
-use Mojolicious;
 use Clustericious::Client;
 use Clustericious::Client::Command;
 use Clustericious::Config;
@@ -51,12 +50,8 @@ route_meta 'set_status'     => { auto_failover => 1 };
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
-    if ($Mojolicious::VERSION >= 2.37) {
-        Mojo::IOLoop::Stream->timeout(600)
-    } else {
-        $self->client->ioloop->connection_timeout(600);
-        $self->client->ioloop->connect_timeout(20);
-    }
+    $self->client->ioloop->connection_timeout(600);
+    $self->client->ioloop->connect_timeout(20);
     return $self;
 }
 
