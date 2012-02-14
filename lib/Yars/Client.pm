@@ -133,6 +133,7 @@ sub download {
         }
         TRACE "GET $url";
         my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
+        $self->res($tx->res);
         if (my ($msg,$code) = $tx->error) {
             if ($code) {
                 ERROR "$code $msg";
