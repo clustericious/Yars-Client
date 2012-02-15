@@ -50,8 +50,7 @@ route_meta 'set_status'     => { auto_failover => 1 };
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
-    $self->client->ioloop->connection_timeout(600);
-    $self->client->ioloop->connect_timeout(20);
+    Mojo::IOLoop::Stream->timeout(600);
     return $self;
 }
 
