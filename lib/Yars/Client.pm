@@ -141,6 +141,8 @@ sub download {
             WARN "Error : ".$tx->error;
             next;
         };
+        DEBUG "Received asset with size ".$res->content->asset->size;
+        TRACE "Received headers : ".$res->headers->to_string;
 
         my $out_file = $dest_dir ? $dest_dir . "/$filename" : $filename;
         DEBUG "Writing to $out_file";
@@ -169,8 +171,9 @@ sub download {
         }
         unless ($verify eq $md5) {
             WARN "Bad md5 for file (got $verify instead of $md5)";
-            WARN "Response : ".$res->to_string;
+            WARN "Response headers : ".$res->headers->to_string;
             unlink $out_file or WARN "couldn't remove $out_file : $!";
+            WARN "Removed $out_file.  This is attempt $tries.";
             next;
         }
 
