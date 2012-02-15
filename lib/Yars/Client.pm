@@ -209,10 +209,10 @@ sub _server_for {
     my $bucket_map = $self->bucket_map_cached;
     unless ($bucket_map && ref($bucket_map) eq 'HASH' && keys %$bucket_map > 0) {
         $bucket_map = $self->bucket_map or WARN $self->errorstring;
-        $self->bucket_map_cached($bucket_map);
+        $self->bucket_map_cached({ %$bucket_map }) if $bucket_map && ref $bucket_map && (keys %$bucket_map > 0);
     }
     unless ($bucket_map && ref $bucket_map && (keys %$bucket_map > 0)) {
-        WARN "Failed to retrieve bucket map";
+        WARN "Failed to retrieve bucket map, using ".$self->server_url;
         return $self->server_url;
     }
     for (0..length($md5)) {
