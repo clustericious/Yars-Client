@@ -18,7 +18,7 @@ use Data::Dumper;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 use 5.10.0;
 
-our $VERSION = '0.63';
+our $VERSION = '0.64';
 
 # default max of 10 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1024*1024*1024 * 10;
