@@ -51,6 +51,7 @@ sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
     Mojo::IOLoop::Stream->timeout(600);
+    $self->client->connect_timeout(30);
     return $self;
 }
 
