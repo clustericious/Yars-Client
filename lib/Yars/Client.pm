@@ -34,6 +34,7 @@ has bucket_map_cached  => sub { 0; }; # Computed on demand.
 route 'welcome'        => "GET",  '/';
 route 'bucket_map'     => "GET",  '/bucket_map';
 route 'disk_usage'     => "GET",  '/disk/usage';
+route 'bucket_usage'   => "GET",  '/bucket/usage';
 route 'servers_status' => "GET",  '/servers/status';
 route 'get'            => "GET",  '/file', \"<md5> <filename>";
 route 'check'          => "HEAD", '/file', \"<md5> <filename>";
