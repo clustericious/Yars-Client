@@ -256,7 +256,24 @@ sub _all_hosts {
 }
 
 sub upload {
-    my ( $self, $filename ) = @_;
+    my $self = shift;
+    my $filename = pop;
+    my $nostash;
+    if (@_) {
+        # To avoid failover :
+        # yarsclient upload --nostash 1 foo
+        # $yc->upload("--nostash",1","foo")
+        # This is undocumented since it is only intended to be
+        # used on a server when balancing, not as a public interface.
+
+        if ($_[0] =~ /nostash$/) {
+            shift;
+            $nostash = shift;
+        }
+    }
+    if (@_) {
+        LOGDIE "unknown options to upload : @_";
+    }
 
     LOGDIE "file needed for upload" unless $filename;
     $filename = File::Spec->rel2abs($filename);
@@ -282,8 +299,10 @@ sub upload {
         $url->path("/file/$basename/$md5");
         DEBUG "Sending $md5 to $url";
 
+        my @nostash = ($nostash ? ("X-Yars-NoStash" => 1) : ());
         $tx = $self->client->build_tx(
             PUT => "$url" => {
+                @nostash,
                 "Content-MD5" => _hex2b64($md5),
                 "Connection"  => "Close"
             }
