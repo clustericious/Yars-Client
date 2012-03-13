@@ -23,7 +23,7 @@ our $VERSION = '0.69';
 # default max of 10 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1024*1024*1024 * 10;
 
-route_doc upload   => "<filename> [md5]";
+route_doc upload   => "<filename>";
 route_doc content  => "<filename> <md5>";
 route_doc download => "<filename> <md5> [dir]";
 route_doc remove   => "<filename> <md5>";
