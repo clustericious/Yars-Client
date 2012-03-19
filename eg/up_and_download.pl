@@ -5,6 +5,10 @@ use Mojo::Asset::File;
 use Mojo::ByteStream qw/b/;
 use strict;
 
+use Log::Log4perl qw(:levels);
+use Log::Log4perl::CommandLine ':loginit' => { level => $TRACE };
+
+
 my @filenames;
 my @md5s;
 my $how_many = $ARGV[0] || 100;
@@ -17,11 +21,10 @@ for (1..$how_many) {
     close $fp;
 }
 
-print "uploading\n";
 my $y = Yars::Client->new();
 my @locations;
 for (1..$how_many) {
-    $y->upload("files/file.$_") or print $y->errorstring;
+    $y->upload("files/file.$_") or warn $y->errorstring;
     push @locations, $y->res->headers->location;
     push @filenames, "file.$_";
     my $a =  Mojo::Asset::File->new(path => "files/file.$_");

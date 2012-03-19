@@ -130,17 +130,17 @@ sub download {
         TRACE "GET $url";
         my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
         $self->res($tx->res);
-        if (my ($msg,$code) = $tx->error) {
+        my $res = $tx->success or do {
+            my ($msg,$code) = $tx->error;
             if ($code) {
                 ERROR "$code $msg";
-                # Legitimate server error, bail out.
                 last;
             }
-            DEBUG "Got error : $msg";
-        }
-        my $res = $tx->success or do {
-            # timeout?  Try again.
-            WARN "Error : ".$tx->error;
+            if ($msg =~ /connection refused/i) {
+                WARN "Error : $msg";
+                last;
+            }
+            WARN "Error (may retry) : $msg";
             next;
         };
         DEBUG "Received asset with size ".$res->content->asset->size;
@@ -312,10 +312,13 @@ sub upload {
         $code = $tx->res->code;
         $self->res($tx->res);
 
-        if (!$code) {
-            INFO "PUT to $host failed : ".($tx->error || 'unknown error');
-        } elsif (my ($message, $code) = $tx->error ) {
-            INFO "Failed to reach $host $code $message";
+        if (!$tx->success) {
+            my ($msg,$code) = $tx->error;
+            if ($code) {
+                INFO "Failed to PUT to $host : $code $msg";
+            } else {
+                INFO "PUT to $host failed : ".$msg;
+            }
         }
     }
     return '' if !$code || !$tx->res->is_status_class(200);
