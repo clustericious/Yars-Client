@@ -114,7 +114,7 @@ sub download {
     my $host = 0;
     while ($tries++ < 10) {
 
-        if ($tries > 1 && ($tries-1) % @hosts == 0) {
+        if ($tries > @hosts + 1) {
             TRACE "Attempt $tries";
             WARN "Waiting $tries seconds before retrying...";
             sleep $tries;
