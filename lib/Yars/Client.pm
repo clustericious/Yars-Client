@@ -137,8 +137,8 @@ sub download {
                 last;
             }
             if ($msg =~ /connection refused/i) {
-                WARN "Error : $msg";
-                last;
+                WARN "Error : $msg (may retry)";
+                next;
             }
             WARN "Error (may retry) : $msg";
             next;
