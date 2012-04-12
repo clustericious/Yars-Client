@@ -71,7 +71,10 @@ B<yarsclient> - Upload, download, and delete files to Yars.
 
     # Check a manifest file
     yarclient check_manifest /my/dir/MANIFEST
+    # Just emit "ok" or "not ok"
     yarclient check_manifest -c /my/dir/MANIFEST
+    # Also do a server side md5 check
+    yarclient check_manifest --show_corrupt 1 /my/dir/MANIFEST
 
 =head1 DESCRIPTION
 

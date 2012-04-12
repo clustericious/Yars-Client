@@ -370,12 +370,19 @@ sub status {
 
 sub check_manifest {
     my $self     = shift;
-    my $check    = shift if $_[0] eq '-c';
-    my $manifest = shift;
+    my @args     = @_;
+    my $check    = 0;
+    my $params  = "";
+    my $manifest;
+    while ($_ = shift @_) {
+        /^-c$/ and do { $check = 1; next; };
+        /^--show_corrupt$/ and do { $params = "?show_corrupt=" . shift; next; };
+        $manifest = $_;
+    }
     LOGDIE "Missing manifest" unless $manifest;
-    LOGDIE "Cannot open manifest" unless -e $manifest;
+    LOGDIE "Cannot open manifest $manifest" unless -e $manifest;
     my $contents = Mojo::Asset::File->new(path => $manifest)->slurp;
-    my $got      = $self->_doit(POST => "/check/manifest", { manifest => $contents  });
+    my $got      = $self->_doit(POST => "/check/manifest$params", { manifest => $contents  });
     $got->{$manifest} = (@{$got->{missing}}==0 ? 'ok' : 'not ok');
     return { $manifest => $got->{$manifest} } if $check;
     return $got;
@@ -435,6 +442,7 @@ Yars::Client (Yet Another REST Server Client)
  # Check a manifest file or list of files.
  my $details = $r->check_manifest( $filename );
  my $check = $r->check_manifest( "-c", $filename );
+ my $check = $r->check_manifest( "--show_corrupt" => 1, $filename );
  my $ck = $r->check_files({ files => [
      { filename => $f1, md5 => $m1 },
      { filename => $f2, md5 => $m2 } ] });
