@@ -383,6 +383,7 @@ sub check_manifest {
     LOGDIE "Cannot open manifest $manifest" unless -e $manifest;
     my $contents = Mojo::Asset::File->new(path => $manifest)->slurp;
     my $got      = $self->_doit(POST => "/check/manifest$params", { manifest => $contents  });
+    return $got unless $self->tx->success;
     $got->{$manifest} = (@{$got->{missing}}==0 ? 'ok' : 'not ok');
     return { $manifest => $got->{$manifest} } if $check;
     return $got;
