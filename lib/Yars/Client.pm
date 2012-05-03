@@ -47,6 +47,7 @@ route_meta 'servers_status' => { auto_failover => 1 };
 route_meta 'check'          => { auto_failover => 1 };
 route_meta 'disk_usage'     => { auto_failover => 1 };
 route_meta 'set_status'     => { auto_failover => 1 };
+route_meta 'upload'         => { dont_read_files => 1 };
 
 sub new {
     my $self = shift->SUPER::new(@_);

@@ -18,20 +18,7 @@ use Log::Log4perl::CommandLine (':all', ':loginit' => <<"EOT");
            log4perl.appender.Screen.layout.ConversionPattern = [%-5p] %d %F{1} (%L) %m %n
 EOT
 
-
-if ($ARGV[0] and $ARGV[0] eq 'upload') {
-    # Clustericious-Client attempts to load file arguments as YAML by default, but
-    # not all files to upload are YAML.  This might be better fixed in Clustericious,
-    # but this solution also gives a little more consistency when running with a 
-    # RESTAS server.
-
-    shift @ARGV;
-    my $yc = Yars::Client->new;
-    $yc->upload(@ARGV) or LOGDIE "upload failed : ".$yc->errorstring;
-}
-else {
-    Clustericious::Client::Command->run(Yars::Client->new, @ARGV);
-}
+Clustericious::Client::Command->run(Yars::Client->new, @ARGV);
 
 __END__
 
