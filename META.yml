@@ -5,8 +5,9 @@ author:
 build_requires:
   Test::More: 0
 configure_requires:
-  Module::Build: 0.36
-generated_by: 'Module::Build version 0.3603'
+  Module::Build: 0.4
+dynamic_config: 1
+generated_by: 'Module::Build version 0.4, CPAN::Meta::Converter version 2.120921'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -15,11 +16,11 @@ name: Yars-Client
 provides:
   Yars::Client:
     file: lib/Yars/Client.pm
-    version: 0.77
+    version: 0.78
 requires:
   Clustericious::Client: 0.54
   Clustericious::Config: 0.04
   JSON: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.77
+version: 0.78

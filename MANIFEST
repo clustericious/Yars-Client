@@ -20,3 +20,4 @@ t/pod.t
 t/write/01-round_trip.t
 tmp/manifest
 tmp/somefile
+META.json
