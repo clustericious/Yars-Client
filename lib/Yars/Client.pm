@@ -41,13 +41,18 @@ route 'check'          => "HEAD", '/file', \"<md5> <filename>";
 route 'set_status'     => "POST", '/disk/status';
 route 'check_files'    => "POST", '/check/manifest';
 
-route_meta 'welcome'        => { auto_failover => 1 };
-route_meta 'bucket_map'     => { auto_failover => 1 };
-route_meta 'servers_status' => { auto_failover => 1 };
-route_meta 'check'          => { auto_failover => 1 };
-route_meta 'disk_usage'     => { auto_failover => 1 };
-route_meta 'set_status'     => { auto_failover => 1 };
+route_meta 'welcome'        => { auto_failover => 1, dont_read_files => 1 };
+route_meta 'bucket_map'     => { auto_failover => 1, dont_read_files => 1 };
+route_meta 'disk_usage'     => { auto_failover => 1, dont_read_files => 1 };
+route_meta 'bucket_usage'   => { auto_failover => 1, dont_read_files => 1 };
+route_meta 'servers_status' => { auto_failover => 1, dont_read_files => 1 };
+route_meta 'get'            => { auto_failover => 1, dont_read_files => 1 };
+route_meta 'check'          => { auto_failover => 1, dont_read_files => 1 };
+route_meta 'set_status'     => { auto_failover => 1, dont_read_files => 1 };
+route_meta 'check_files'    => { auto_failover => 1, dont_read_files => 1 };
+
 route_meta 'upload'         => { dont_read_files => 1 };
+route_meta 'download'       => { dont_read_files => 1 };
 route_meta 'check_manifest' => { dont_read_files => 1 };
 route_meta 'check'          => { dont_read_files => 1 };
 
