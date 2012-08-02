@@ -1,0 +1,48 @@
+{
+   "abstract" : "Yars Client",
+   "author" : [
+      "Marty Brandon<mbrandon@sesda2.com>"
+   ],
+   "dynamic_config" : 1,
+   "generated_by" : "Module::Build version 0.4, CPAN::Meta::Converter version 2.120921",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Yars-Client",
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Test::More" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.4"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Clustericious::Client" : "0.54",
+            "Clustericious::Config" : "0.04",
+            "JSON" : "0"
+         }
+      }
+   },
+   "provides" : {
+      "Yars::Client" : {
+         "file" : "lib/Yars/Client.pm",
+         "version" : "0.78"
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "license" : [
+         "http://dev.perl.org/licenses/"
+      ]
+   },
+   "version" : "0.78"
+}
