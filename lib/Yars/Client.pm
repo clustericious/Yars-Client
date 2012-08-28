@@ -138,6 +138,7 @@ sub download {
         TRACE "GET $url";
         my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
         $self->res($tx->res);
+        $self->tx($tx);
         my $res = $tx->success or do {
             my ($msg,$code) = $tx->error;
             if ($code) {
@@ -247,6 +248,7 @@ sub put {
     TRACE "PUT $url";
     my $tx = $self->client->put("$url" => { "Content-MD5" => _hex2b64($md5), "Connection" => "Close" } => $content);
     $self->res($tx->res);
+    $self->tx($tx);
     return $tx->success ? 'ok' : '';
 }
 
@@ -319,6 +321,7 @@ sub upload {
         $tx = $self->client->start($tx);
         $code = $tx->res->code;
         $self->res($tx->res);
+        $self->tx($tx);
 
         if (!$tx->success) {
             my ($msg,$code) = $tx->error;
@@ -371,6 +374,7 @@ sub status {
         else {
             ERROR $tx->error;
             $self->res($tx->res);
+            $self->tx($tx);
             return;
         }
     }
