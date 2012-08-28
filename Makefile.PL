@@ -2,18 +2,18 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'NAME' => 'Yars::Client',
-          'VERSION_FROM' => 'lib/Yars/Client.pm',
-          'PREREQ_PM' => {
-                           'Clustericious::Client' => '0.54',
-                           'Clustericious::Config' => '0.04',
-                           'JSON' => '0',
-                           'Test::More' => 0
-                         },
-          'INSTALLDIRS' => 'site',
-          'EXE_FILES' => [
-                           'bin/yarsclient'
-                         ],
-          'PL_FILES' => {}
-        )
+  'NAME' => 'Yars::Client',
+  'VERSION_FROM' => 'lib/Yars/Client.pm',
+  'PREREQ_PM' => {
+                   'Clustericious::Client' => '0.54',
+                   'Clustericious::Config' => '0.04',
+                   'JSON' => '0',
+                   'Test::More' => 0
+                 },
+  'INSTALLDIRS' => 'site',
+  'EXE_FILES' => [
+                   'bin/yarsclient'
+                 ],
+  'PL_FILES' => {}
+)
 ;
