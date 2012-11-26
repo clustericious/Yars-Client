@@ -1,13 +1,13 @@
 ---
 abstract: 'Yars Client'
 author:
-  - 'Marty Brandon<mbrandon@sesda2.com>'
+  - 'Brian Duggan <brian.duggan@nasa.gov>'
 build_requires:
   Test::More: 0
 configure_requires:
-  Module::Build: 0.4
+  Module::Build: 0.40
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4, CPAN::Meta::Converter version 2.120921'
+generated_by: 'Module::Build version 0.4003, CPAN::Meta::Converter version 2.112621'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -16,11 +16,11 @@ name: Yars-Client
 provides:
   Yars::Client:
     file: lib/Yars/Client.pm
-    version: 0.80
+    version: 0.81
 requires:
   Clustericious::Client: 0.54
   Clustericious::Config: 0.04
   JSON: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.80
+version: 0.81
