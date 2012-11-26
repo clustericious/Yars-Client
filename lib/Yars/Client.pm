@@ -413,7 +413,7 @@ __END__
 
 =head1 NAME
 
-Yars::Client (Yet Another REST Server Client)
+Yars::Client -- Yet Another RESTful-Archive Service Client
 
 =head1 SYNOPSIS
 
@@ -442,12 +442,12 @@ Yars::Client (Yet Another REST Server Client)
 
  print "Server version is ".$r->status->{server_version};
  my $usage = $r->disk_usage();      # Returns usage for a single server.
- my $nother_usage = Yars::Client->new(url => "http://anotherserver.nasa.gov:9999")->disk_usage();
+ my $nother_usage = Yars::Client->new(url => "http://host1:9999")->disk_usage();
  my $status = $r->servers_status(); # return a hash of servers, disks, and their statuses
 
  # Mark a disk down.
  my $ok = $r->set_status({ root => "/acps/disk/one", state => "down" });
- my $ok = $r->set_status({ root => "/acps/disk/one", state => "down", host => "http://someyarshost.nasa.gov" });
+ my $ok = $r->set_status({ root => "/acps/disk/one", state => "down", host => "http://host2" });
 
  # Mark a disk up.
  my $ok = $r->set_status({ root => "/acps/disk/one", state => "up" });
