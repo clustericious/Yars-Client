@@ -5,7 +5,7 @@ use Module::Build;
 my $builder = Module::Build->new(
     module_name         => 'Yars::Client',
     license             => 'perl',
-    dist_author         => q{Marty Brandon<mbrandon@sesda2.com>},
+    dist_author         =>  q{Brian Duggan <brian.duggan@nasa.gov>},
     dist_version_from   => 'lib/Yars/Client.pm',
     dist_abstract       => 'Yars Client',
     requires => {

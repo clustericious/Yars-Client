@@ -1,12 +1,10 @@
 bin/yarsclient
 Build.PL
+Changes
 eg/async-put.pl
 eg/check.pl
-eg/create_yars_test_files.pl
 eg/lots.pl
-eg/ops2dev
 eg/up_and_download.pl
-eg/Yars.conf
 lib/Yars/Client.pm
 Makefile.PL
 MANIFEST			This list of files

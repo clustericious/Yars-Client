@@ -1,31 +1,11 @@
-Yars Client (Yet Another RESTAS Server Client)
+Yars::Client (Yet Another RESTful-Archive Service Client)
 
-Lightweight alternative to RESTAS that uses the Clustericious framework.
-
-
-Install the package:
+To install :
 
     perl Build.PL
     ./Build
     ./Build test
     ./Build install
 
+Please see the pod for documentation.
 
-
-Create a config file (~/etc/Yars.conf) that looks something like this:
-
----
-url : http://localhost:10001
-port : 10001
-host : localhost
-ssh_tunnel :
-  remote_host : omidev.gsfc.nasa.gov
-  server_host : devarch11
-  server_port : '8300'
-
-
-
-SEE ALSO
-
-Clustericious::Client
-Yars-Client

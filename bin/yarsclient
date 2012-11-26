@@ -77,8 +77,6 @@ Command-line interface to Yars::Client.  Client for Yars.
 
 L<Yars::Client>
 
-L<RESTAS::Client>
-
 L<Clustericious::Client>
 
 =cut

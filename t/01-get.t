@@ -26,12 +26,5 @@ like $yc->server_type, qr/[Yars|RESTAS]/, 'server type';
 my $status = $yc->status;
 ok $status->{server_version}, 'server status';
 
-my $pwd = getcwd;
-my $dir = File::Temp->newdir;
-chdir $dir;
-# Get a gzipped file
-ok $yc->download("https://omisips1.omisips.eosdis.nasa.gov:8000/File/2566ff079adc7a472de4d108a7c3752f/NISE_SSMIF13_20050118.HDFEOS");
-chdir $pwd;
-
 1;
 
