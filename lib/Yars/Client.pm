@@ -463,9 +463,9 @@ Yars::Client -- Yet Another RESTful-Archive Service Client
 
 =head1 DESCRIPTION
 
-Client for Yars.
+Client for L<Yars>.
 
 =head1 SEE ALSO
 
- yarsclient (executable that comes with Yars::Client)
- Clustericious::Client
+ L<yarsclient>
+ L<Clustericious::Client>
