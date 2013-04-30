@@ -1,4 +1,7 @@
-Release history for Yars-Client
+Revision history for {{$dist->name}}
+
+{{$NEXT}}
+  - migrate to Dist::Zilla
 
 0.81 2012-11-25
      First public release
