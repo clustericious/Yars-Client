@@ -1,6 +1,6 @@
 #!perl
 
-use Test::More $ENV{YC_LIVE_TESTS} ? () : (skip_all => "Set YC_LIVE_TESTS to use Yars configuration ");
+use Test::More;
 use Yars::Client;
 use Log::Log4perl;
 use Mojo::ByteStream 'b';
