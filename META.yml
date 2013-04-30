@@ -1,0 +1,35 @@
+---
+abstract: 'Yet Another RESTful-Archive Service Client'
+author:
+  - 'Graham Ollis <plicease@cpan.org>'
+build_requires:
+  Cwd: 0
+  File::Temp: 0
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.30
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.130880'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: Yars-Client
+requires:
+  Clustericious::Client: 0.54
+  Clustericious::Client::Command: 0
+  Clustericious::Config: 0.04
+  Clustericious::Log: 0
+  Data::Dumper: 0
+  Digest::file: 0
+  File::Basename: 0
+  File::Spec: 0
+  IO::Uncompress::Gunzip: 0
+  Log::Log4perl: 0
+  Log::Log4perl::CommandLine: 0
+  Mojo::Asset::File: 0
+  Mojo::Base: 0
+  Mojo::ByteStream: 0
+  Mojo::URL: 0
+  perl: v5.10.0
+version: 0.82

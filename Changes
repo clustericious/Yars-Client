@@ -1,0 +1,8 @@
+Revision history for Yars-Client
+
+0.82      2013-04-30 13:55:23 EST5EDT
+  - migrate to Dist::Zilla
+
+0.81 2012-11-25
+     First public release
+

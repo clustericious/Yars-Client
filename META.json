@@ -1,0 +1,53 @@
+{
+   "abstract" : "Yet Another RESTful-Archive Service Client",
+   "author" : [
+      "Graham Ollis <plicease@cpan.org>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.130880",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Yars-Client",
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "6.30"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Clustericious::Client" : "0.54",
+            "Clustericious::Client::Command" : "0",
+            "Clustericious::Config" : "0.04",
+            "Clustericious::Log" : "0",
+            "Data::Dumper" : "0",
+            "Digest::file" : "0",
+            "File::Basename" : "0",
+            "File::Spec" : "0",
+            "IO::Uncompress::Gunzip" : "0",
+            "Log::Log4perl" : "0",
+            "Log::Log4perl::CommandLine" : "0",
+            "Mojo::Asset::File" : "0",
+            "Mojo::Base" : "0",
+            "Mojo::ByteStream" : "0",
+            "Mojo::URL" : "0",
+            "perl" : "v5.10.0"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Cwd" : "0",
+            "File::Temp" : "0",
+            "Test::More" : "0"
+         }
+      }
+   },
+   "release_status" : "stable",
+   "version" : "0.82"
+}
+
