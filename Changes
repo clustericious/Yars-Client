@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.82      2013-04-30 13:55:23 EST5EDT
   - migrate to Dist::Zilla
 
 0.81 2012-11-25
