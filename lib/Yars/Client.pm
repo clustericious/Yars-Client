@@ -1,5 +1,8 @@
 package Yars::Client;
 
+# ABSTRACT: Yet Another RESTful-Archive Service Client
+# VERSION
+
 use strict;
 use warnings;
 
@@ -17,8 +20,6 @@ use Digest::file qw/digest_file_hex/;
 use Data::Dumper;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 use 5.10.0;
-
-our $VERSION = '0.81';
 
 # default max of 10 GB
 $ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1024*1024*1024 * 10;
@@ -411,10 +412,6 @@ sub remote {
 
 __END__
 
-=head1 NAME
-
-Yars::Client -- Yet Another RESTful-Archive Service Client
-
 =head1 SYNOPSIS
 
  my $r = Yars::Client->new;
@@ -467,5 +464,6 @@ Client for L<Yars>.
 
 =head1 SEE ALSO
 
- L<yarsclient>
- L<Clustericious::Client>
+L<yarsclient>, L<Clustericious::Client>
+
+=cut

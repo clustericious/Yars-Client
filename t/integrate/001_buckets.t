@@ -2,8 +2,8 @@
 
 # 001_buckets.t
 
+use Test::More $ENV{YC_LIVE_TESTS} ? () : (skip_all => "Set YC_LIVE_TESTS to use Yars configuration ");
 use Yars::Client;
-use Test::More;
 use Data::Dumper;
 use File::Temp;
 use File::Basename qw/basename/;
@@ -14,7 +14,7 @@ use strict;
 use warnings;
 
 my $c = Yars::Client->new(
-    server_url  => "http://localhost:9051",
+    server_url  => "http://localhost:3002",
     server_type => "Yars"
 );
 Yars::Client->get_logger()->level("WARN");
