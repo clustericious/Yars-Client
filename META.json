@@ -36,6 +36,7 @@
             "Mojo::Base" : "0",
             "Mojo::ByteStream" : "0",
             "Mojo::URL" : "0",
+            "Number::Bytes::Human" : "0",
             "perl" : "v5.10.0"
          }
       },
@@ -47,7 +48,7 @@
          }
       }
    },
-   "release_status" : "stable",
-   "version" : "0.82"
+   "release_status" : "testing",
+   "version" : "0.82_01"
 }
 

@@ -1,7 +1,7 @@
 package Yars::Client;
 
 # ABSTRACT: Yet Another RESTful-Archive Service Client
-our $VERSION = '0.82'; # VERSION
+our $VERSION = '0.82_01'; # VERSION
 
 use strict;
 use warnings;
@@ -19,10 +19,8 @@ use Log::Log4perl qw(:easy);
 use Digest::file qw/digest_file_hex/;
 use Data::Dumper;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
+use Number::Bytes::Human qw( format_bytes parse_bytes );
 use 5.10.0;
-
-# default max of 10 GB
-$ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1024*1024*1024 * 10;
 
 route_doc upload   => "<filename>";
 route_doc content  => "<filename> <md5>";
@@ -137,7 +135,9 @@ sub download {
             $url->path("/file/$filename/$md5");
         }
         TRACE "GET $url";
-        my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
+        my $tx = $self->client->build_tx(GET => $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
+        $tx->res->max_message_size(parse_bytes($self->_config->max_message_size_client(default => 53687091200)));
+        $self->client->start($tx);
         $self->res($tx->res);
         $self->tx($tx);
         my $res = $tx->success or do {
@@ -420,7 +420,7 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.82
+version 0.82_01
 
 =head1 SYNOPSIS
 

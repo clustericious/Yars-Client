@@ -36,14 +36,15 @@ my %WriteMakefileArgs = (
     "Mojo::Asset::File" => 0,
     "Mojo::Base" => 0,
     "Mojo::ByteStream" => 0,
-    "Mojo::URL" => 0
+    "Mojo::URL" => 0,
+    "Number::Bytes::Human" => 0
   },
   "TEST_REQUIRES" => {
     "Cwd" => 0,
     "File::Temp" => 0,
     "Test::More" => 0
   },
-  "VERSION" => "0.82",
+  "VERSION" => "0.82_01",
   "test" => {
     "TESTS" => "t/*.t"
   }

@@ -31,5 +31,6 @@ requires:
   Mojo::Base: 0
   Mojo::ByteStream: 0
   Mojo::URL: 0
+  Number::Bytes::Human: 0
   perl: v5.10.0
-version: 0.82
+version: 0.82_01
