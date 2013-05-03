@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - maximum message size for download can be set in config (max_message_size_client)
 
 0.82      2013-04-30 13:55:23 EST5EDT
   - migrate to Dist::Zilla

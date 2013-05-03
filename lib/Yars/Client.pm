@@ -19,10 +19,8 @@ use Log::Log4perl qw(:easy);
 use Digest::file qw/digest_file_hex/;
 use Data::Dumper;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
+use Number::Bytes::Human qw( format_bytes parse_bytes );
 use 5.10.0;
-
-# default max of 10 GB
-$ENV{MOJO_MAX_MESSAGE_SIZE} ||= 1024*1024*1024 * 10;
 
 route_doc upload   => "<filename>";
 route_doc content  => "<filename> <md5>";
@@ -137,6 +135,8 @@ sub download {
             $url->path("/file/$filename/$md5");
         }
         TRACE "GET $url";
+        # TODO: even better if we can do this without ENV
+        local $ENV{MOJO_MAX_MESSAGE_SIZE} = parse_bytes($self->_config->max_message_size_client(default => 53687091200));
         my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
         $self->res($tx->res);
         $self->tx($tx);
