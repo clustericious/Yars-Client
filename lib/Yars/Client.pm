@@ -135,9 +135,9 @@ sub download {
             $url->path("/file/$filename/$md5");
         }
         TRACE "GET $url";
-        # TODO: even better if we can do this without ENV
-        local $ENV{MOJO_MAX_MESSAGE_SIZE} = parse_bytes($self->_config->max_message_size_client(default => 53687091200));
-        my $tx = $self->client->get( $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
+        my $tx = $self->client->build_tx(GET => $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
+        $tx->res->max_message_size(parse_bytes($self->_config->max_message_size_client(default => 53687091200)));
+        $self->client->start($tx);
         $self->res($tx->res);
         $self->tx($tx);
         my $res = $tx->success or do {
