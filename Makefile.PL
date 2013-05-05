@@ -11,7 +11,11 @@ use ExtUtils::MakeMaker 6.30;
 my %WriteMakefileArgs = (
   "ABSTRACT" => "Yet Another RESTful-Archive Service Client",
   "AUTHOR" => "Graham Ollis <plicease\@cpan.org>",
-  "BUILD_REQUIRES" => {},
+  "BUILD_REQUIRES" => {
+    "Cwd" => 0,
+    "File::Temp" => 0,
+    "Test::More" => 0
+  },
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
   },
@@ -37,32 +41,14 @@ my %WriteMakefileArgs = (
     "Mojo::Base" => 0,
     "Mojo::ByteStream" => 0,
     "Mojo::URL" => 0,
-    "Number::Bytes::Human" => 0
+    "Number::Bytes::Human" => "0.09"
   },
-  "TEST_REQUIRES" => {
-    "Cwd" => 0,
-    "File::Temp" => 0,
-    "Test::More" => 0
-  },
-  "VERSION" => "0.82_01",
+  "VERSION" => "0.82_02",
   "test" => {
     "TESTS" => "t/*.t"
   }
 );
 
-
-unless ( eval { ExtUtils::MakeMaker->VERSION(6.63_03) } ) {
-  my $tr = delete $WriteMakefileArgs{TEST_REQUIRES};
-  my $br = $WriteMakefileArgs{BUILD_REQUIRES};
-  for my $mod ( keys %$tr ) {
-    if ( exists $br->{$mod} ) {
-      $br->{$mod} = $tr->{$mod} if $tr->{$mod} > $br->{$mod};
-    }
-    else {
-      $br->{$mod} = $tr->{$mod};
-    }
-  }
-}
 
 unless ( eval { ExtUtils::MakeMaker->VERSION(6.56) } ) {
   my $br = delete $WriteMakefileArgs{BUILD_REQUIRES};

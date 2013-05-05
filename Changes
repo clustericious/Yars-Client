@@ -1,5 +1,8 @@
 Revision history for Yars-Client
 
+0.82_02   2013-05-04 21:43:11 EST5EDT
+  - fix dependencies
+
 0.82_01   2013-05-03 19:16:17 EST5EDT
   - maximum message size for download can be set in config (max_message_size_client)
 

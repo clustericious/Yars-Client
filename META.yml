@@ -9,7 +9,7 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.300034, CPAN::Meta::Converter version 2.130880'
+generated_by: 'Dist::Zilla version 4.300031, CPAN::Meta::Converter version 2.120921'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -31,6 +31,6 @@ requires:
   Mojo::Base: 0
   Mojo::ByteStream: 0
   Mojo::URL: 0
-  Number::Bytes::Human: 0
+  Number::Bytes::Human: 0.09
   perl: v5.10.0
-version: 0.82_01
+version: 0.82_02
