@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - promote to production
 
 0.82_02   2013-05-04 21:43:11 EST5EDT
   - fix dependencies
