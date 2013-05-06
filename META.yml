@@ -33,4 +33,4 @@ requires:
   Mojo::URL: 0
   Number::Bytes::Human: 0.09
   perl: v5.10.0
-version: 0.82_02
+version: 0.83

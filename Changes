@@ -1,5 +1,8 @@
 Revision history for Yars-Client
 
+0.83      2013-05-06 08:32:44 EST5EDT
+  - promote to production
+
 0.82_02   2013-05-04 21:43:11 EST5EDT
   - fix dependencies
 
