@@ -1,0 +1,6 @@
+language: perl
+install:
+  - cpanm Clustericious Clustericious::Config Clustericious::Log Data::Dumper Digest::file IO::Uncompress::Gunzip Log::Log4perl Log::Log4perl::CommandLine Number::Bytes::Human
+script: HARNESS_IS_VERBOSE=1 prove -v -Ilib t
+perl:
+  - "5.16"
