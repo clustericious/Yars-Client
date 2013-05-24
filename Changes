@@ -1,5 +1,8 @@
 Revision history for Yars-Client
 
+0.84      2013-05-23 21:40:13 America/New_York
+  - Mojolicious 4.0 compatability
+
 0.83      2013-05-06 08:32:44 EST5EDT
   - promote to production
 

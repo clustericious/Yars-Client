@@ -15,6 +15,7 @@ lib/Yars/Client.pm
 t/00-load.t
 t/01-get.t
 t/pod.t
+util/travis.pl
 xt/data/welcome
 xt/integrate/001_buckets.t
 xt/write/01-round_trip.t

@@ -1,7 +1,7 @@
 package Yars::Client;
 
 # ABSTRACT: Yet Another RESTful-Archive Service Client
-our $VERSION = '0.83'; # VERSION
+our $VERSION = '0.84'; # VERSION
 
 use strict;
 use warnings;
@@ -58,7 +58,9 @@ route_meta 'check'          => { dont_read_files => 1 };
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
-    Mojo::IOLoop::Stream->timeout(600);
+    if($Mojolicious::VERSION < 4.0) {
+        Mojo::IOLoop::Stream->timeout(600);
+    }
     $self->client->connect_timeout(30);
     return $self;
 }
@@ -136,6 +138,10 @@ sub download {
         }
         TRACE "GET $url";
         my $tx = $self->client->build_tx(GET => $url, { "Connection" => "Close", "Accept-Encoding" => "gzip" } );
+        if($Mojolicious::VERSION >= 4.0) {
+            require Mojo::IOLoop;
+            Mojo::IOLoop->stream($tx->connection)->timeout(3000);
+        }
         $tx->res->max_message_size(parse_bytes($self->_config->max_message_size_client(default => 53687091200)));
         $self->client->start($tx);
         $self->res($tx->res);
@@ -319,6 +325,10 @@ sub upload {
             }
         );
         $tx->req->content->asset($asset);
+        if($Mojolicious::VERSION >= 4.0) {
+            require Mojo::IOLoop;
+            Mojo::IOLoop->stream($tx->connection)->timeout(3000);
+        }
         $tx = $self->client->start($tx);
         $code = $tx->res->code;
         $self->res($tx->res);
@@ -420,7 +430,7 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.83
+version 0.84
 
 =head1 SYNOPSIS
 
