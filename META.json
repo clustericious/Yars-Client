@@ -35,7 +35,6 @@
             "Mojo::Asset::File" : "0",
             "Mojo::Base" : "0",
             "Mojo::ByteStream" : "0",
-            "Mojo::IOLoop" : "0",
             "Mojo::URL" : "0",
             "Number::Bytes::Human" : "0.09",
             "perl" : "v5.10.0"
@@ -50,6 +49,6 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.84"
+   "version" : "0.85"
 }
 

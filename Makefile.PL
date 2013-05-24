@@ -36,7 +36,6 @@ my %WriteMakefileArgs = (
     "Mojo::Asset::File" => 0,
     "Mojo::Base" => 0,
     "Mojo::ByteStream" => 0,
-    "Mojo::IOLoop" => 0,
     "Mojo::URL" => 0,
     "Number::Bytes::Human" => "0.09"
   },
@@ -45,7 +44,7 @@ my %WriteMakefileArgs = (
     "File::Temp" => 0,
     "Test::More" => 0
   },
-  "VERSION" => "0.84",
+  "VERSION" => "0.85",
   "test" => {
     "TESTS" => "t/*.t"
   }
