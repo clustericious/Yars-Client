@@ -1,6 +1,15 @@
 language: perl
 install:
-  - cpanm -n YAML Clustericious::Config Clustericious::Log Data::Dumper Digest::file IO::Uncompress::Gunzip Log::Log4perl Log::Log4perl::CommandLine Number::Bytes::Human Yars
+  - cpanm -n YAML
+  - cpanm -n Clustericious::Config
+  - cpanm -n Clustericious::Log
+  - cpanm -n Data::Dumper
+  - cpanm -n Digest::file
+  - cpanm -n IO::Uncompress::Gunzip
+  - cpanm -n Log::Log4perl
+  - cpanm -n Log::Log4perl::CommandLine
+  - cpanm -n Number::Bytes::Human
+  - cpanm -n Yars
 before_script:
   - perl util/travis.pl
   - yars start
