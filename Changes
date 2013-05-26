@@ -1,5 +1,8 @@
 Revision history for Yars-Client
 
+0.86      2013-05-25 23:23:52 America/New_York
+  - timeout fix
+
 0.85      2013-05-24 04:46:26 America/New_York
   - Mojolicious 4.0 compatability
 
