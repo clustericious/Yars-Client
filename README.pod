@@ -6,7 +6,7 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.85
+version 0.86
 
 =head1 SYNOPSIS
 
@@ -56,6 +56,14 @@ version 0.85
 =head1 DESCRIPTION
 
 Client for L<Yars>.
+
+=head1 AUTHORS
+
+Current maintainer: Graham Ollis <plicease@cpan.org>
+
+Previous maintainer: Marty Brandon
+
+Original author: Brian Duggan
 
 =head1 SEE ALSO
 
