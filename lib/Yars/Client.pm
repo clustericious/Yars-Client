@@ -1,7 +1,7 @@
 package Yars::Client;
 
 # ABSTRACT: Yet Another RESTful-Archive Service Client
-our $VERSION = '0.86'; # VERSION
+our $VERSION = '0.87'; # VERSION
 
 use strict;
 use warnings;
@@ -418,7 +418,7 @@ sub remote {
 
 1;
 
-__END__
+
 
 =pod
 
@@ -428,7 +428,7 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.86
+version 0.87
 
 =head1 SYNOPSIS
 
@@ -479,6 +479,14 @@ version 0.86
 
 Client for L<Yars>.
 
+=head1 AUTHORS
+
+Current maintainer: Graham Ollis <plicease@cpan.org>
+
+Previous maintainer: Marty Brandon
+
+Original author: Brian Duggan
+
 =head1 SEE ALSO
 
 L<yarsclient>, L<Clustericious::Client>
@@ -495,3 +503,7 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
+
+
+__END__
+
