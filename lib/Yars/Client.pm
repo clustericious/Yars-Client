@@ -470,14 +470,6 @@ __END__
 
 Client for L<Yars>.
 
-=head1 AUTHORS
-
-Current maintainer: Graham Ollis <plicease@cpan.org>
-
-Previous maintainer: Marty Brandon
-
-Original author: Brian Duggan
-
 =head1 SEE ALSO
 
 L<yarsclient>, L<Clustericious::Client>

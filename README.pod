@@ -57,21 +57,19 @@ version 0.87
 
 Client for L<Yars>.
 
-=head1 AUTHORS
-
-Current maintainer: Graham Ollis <plicease@cpan.org>
-
-Previous maintainer: Marty Brandon
-
-Original author: Brian Duggan
-
 =head1 SEE ALSO
 
 L<yarsclient>, L<Clustericious::Client>
 
 =head1 AUTHOR
 
-Graham Ollis <plicease@cpan.org>
+original author: Marty Brandon
+
+current maintainer: Graham Ollis <plicease@cpan.org>
+
+contributors:
+
+Brian Duggan
 
 =head1 COPYRIGHT AND LICENSE
 
