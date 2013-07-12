@@ -1,7 +1,7 @@
 package Yars::Client;
 
 # ABSTRACT: Yet Another RESTful-Archive Service Client
-our $VERSION = '0.87'; # VERSION
+our $VERSION = '0.87_01'; # VERSION
 
 use strict;
 use warnings;
@@ -58,14 +58,14 @@ route_meta 'check'          => { dont_read_files => 1 };
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
-    if($Mojolicious::VERSION < 4.0) {
-        # if Mojolicious.pm isn't loaded then we can't
-        # detect the version, so wrap this call in an
-        # eval since it will fail on newer mojos
-        eval { Mojo::IOLoop::Stream->timeout(600) }
-        # ignore the error.
-    }
-    $self->client->connect_timeout(30);
+    eval {
+        # Mojo <  4.0
+        Mojo::IOLoop::Stream->timeout(600);
+        1;
+    } || do {
+        # Mojo >= 4.0
+        $self->client->connect_timeout(30);
+    };
     return $self;
 }
 
@@ -428,7 +428,7 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.87
+version 0.87_01
 
 =head1 SYNOPSIS
 
@@ -479,21 +479,19 @@ version 0.87
 
 Client for L<Yars>.
 
-=head1 AUTHORS
-
-Current maintainer: Graham Ollis <plicease@cpan.org>
-
-Previous maintainer: Marty Brandon
-
-Original author: Brian Duggan
-
 =head1 SEE ALSO
 
 L<yarsclient>, L<Clustericious::Client>
 
 =head1 AUTHOR
 
-Graham Ollis <plicease@cpan.org>
+original author: Marty Brandon
+
+current maintainer: Graham Ollis <plicease@cpan.org>
+
+contributors:
+
+Brian Duggan
 
 =head1 COPYRIGHT AND LICENSE
 
