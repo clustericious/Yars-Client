@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.87_01   2013-07-12 16:00:57 America/New_York
   - silence warning about Mojolicious::VERSION
 
 0.87      2013-06-30 18:36:12 America/New_York
