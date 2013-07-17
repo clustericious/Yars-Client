@@ -58,13 +58,13 @@ route_meta 'check'          => { dont_read_files => 1 };
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
-    if($Mojolicious::VERSION < 4.0) {
+    #if($Mojolicious::VERSION < 4.0) {
         # if Mojolicious.pm isn't loaded then we can't
         # detect the version, so wrap this call in an
         # eval since it will fail on newer mojos
         eval { Mojo::IOLoop::Stream->timeout(600) }
         # ignore the error.
-    }
+    #}
     $self->client->connect_timeout(30);
     return $self;
 }
