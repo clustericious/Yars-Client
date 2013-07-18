@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - promote to production
 
 0.87_01   2013-07-12 16:00:57 America/New_York
   - silence warning about Mojolicious::VERSION
