@@ -1,7 +1,7 @@
 package Yars::Client;
 
 # ABSTRACT: Yet Another RESTful-Archive Service Client
-our $VERSION = '0.87_01'; # VERSION
+our $VERSION = '0.88'; # VERSION
 
 use strict;
 use warnings;
@@ -428,7 +428,7 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.87_01
+version 0.88
 
 =head1 SYNOPSIS
 
