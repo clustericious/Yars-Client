@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.88      2013-07-18 09:25:49 America/New_York
   - promote to production
 
 0.87_01   2013-07-12 16:00:57 America/New_York
