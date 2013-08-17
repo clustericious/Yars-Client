@@ -33,7 +33,7 @@ ok $r->res->is_status_class(200), "status is 2xx";
 is $r->res->headers->location, $r->location("welcome","0bb3c30dc72e63881db5005f1aa19ac3"), "right location";
 
 ok $r->upload( $Bin . '/../data/welcome' ), "uploaded same file";
-ok $r->res->is_status_class(200), "Yars (201) or RESTAS (200)";
+ok $r->res->is_status_class(200), "Yars (201)";
 
 like $r->get('welcome', '0bb3c30dc72e63881db5005f1aa19ac3'), qr/^welcome/, 'get file';
 diag $r->errorstring;
