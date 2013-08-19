@@ -15,7 +15,6 @@ use warnings;
 
 my $c = Yars::Client->new(
     server_url  => "http://localhost:3002",
-    server_type => "Yars"
 );
 Yars::Client->get_logger()->level("WARN");
 Clustericious::Client->get_logger()->level("WARN");

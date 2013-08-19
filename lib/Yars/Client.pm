@@ -1,7 +1,7 @@
 package Yars::Client;
 
 # ABSTRACT: Yet Another RESTful-Archive Service Client
-our $VERSION = '0.88'; # VERSION
+our $VERSION = '0.89'; # VERSION
 
 use strict;
 use warnings;
@@ -27,7 +27,6 @@ route_doc content  => "<filename> <md5>";
 route_doc download => "<filename> <md5> [dir]";
 route_doc remove   => "<filename> <md5>";
 
-has server_type => sub { shift->_config->server_type(default => 'Yars') };
 has bucket_map_cached  => sub { 0; }; # Computed on demand.
 
 route 'welcome'        => "GET",  '/';
@@ -211,11 +210,7 @@ sub remove {
     LOGDIE "file and md5 needed for remove"
         unless $filename && $md5;
 
-    my $url = (
-          $self->server_type eq 'RESTAS'
-        ? $self->_get_url("/file/$filename/$md5")
-        : $self->_get_url("/file/$md5/$filename")
-    );
+    my $url = $self->_get_url("/file/$md5/$filename");
     TRACE("removing $filename $md5 from ", $url->to_string);
 
     # Delete the file
@@ -227,7 +222,6 @@ sub remove {
 sub _server_for {
     my $self = shift;
     my $md5 = shift or LOGDIE "Missing argument md5";
-    return $self->server_url if $self->server_type eq 'RESTAS';
     my $bucket_map = $self->bucket_map_cached;
     unless ($bucket_map && ref($bucket_map) eq 'HASH' && keys %$bucket_map > 0) {
         $bucket_map = $self->bucket_map or WARN $self->errorstring;
@@ -302,10 +296,6 @@ sub upload {
     my $asset    = Mojo::Asset::File->new( path => $filename );
     my $md5      = digest_file_hex($filename, 'MD5');
 
-    if ($self->server_type eq 'RESTAS') {
-        return 'ok' if $self->check($filename,$md5);
-    }
-
     my @servers = $self->_all_hosts( $self->_server_for($md5) );
 
     my $tx;
@@ -348,47 +338,6 @@ sub upload {
     return 'ok';
 }
 
-sub status {
-    my $self = shift;
-
-    return $self->SUPER::status(@_) unless $self->server_type eq 'RESTAS';
-
-    # Provides a workaround for getting the status of a RESTAS server.
-
-    if ( $self->server_type eq 'RESTAS' ) {
-        # RESTAS server status
-
-        # This request never succeeds, but a '404 not found' at least means that
-        # the server replied, which we use to indicate that status is ok.
-        my $tx = $self->client->head( $self->server_url . '/my_bogus_url' );
-        my ($message, $code) = $tx->error;
-
-        my $config = Clustericious::Config->new('Yars');
-        my $host = $config->{ssh_tunnel}
-            ? $config->{ssh_tunnel}{server_host}
-            : $config->{host};
-
-        if (defined $code and $code == 404) {
-            my %status = (
-                app_name        => 'Yars',
-                server_hostname => $host,
-                server_url      => $self->server_url,
-                server_version  => 'RESTAS',
-            );
-
-            $tx->res->error(undef);  # unset the error flag
-
-            return \%status;
-        }
-        else {
-            ERROR $tx->error;
-            $self->res($tx->res);
-            $self->tx($tx);
-            return;
-        }
-    }
-}
-
 sub check_manifest {
     my $self     = shift;
     my @args     = @_;
@@ -428,7 +377,7 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.88
+version 0.89
 
 =head1 SYNOPSIS
 

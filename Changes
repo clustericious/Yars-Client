@@ -1,5 +1,8 @@
 Revision history for Yars-Client
 
+0.89      2013-08-19 02:25:49 America/New_York
+  - removed RESTAS support (bduggan, gh#1)
+
 0.88      2013-07-18 09:25:49 America/New_York
   - promote to production
 

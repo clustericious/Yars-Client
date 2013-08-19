@@ -37,4 +37,4 @@ resources:
   bugtracker: https://github.com/plicease/yars-client/issues
   homepage: http://perl.wdlabs.com/Yars-Client/
   repository: git://github.com/plicease/yars-client.git
-version: 0.88
+version: 0.89

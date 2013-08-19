@@ -19,9 +19,7 @@ ok $yc, "made a client object";
 
 my $welcome = $yc->welcome;
 
-like $welcome, qr/welcome to [yars|RESTAS]/i, "got welcome message";
-
-like $yc->server_type, qr/[Yars|RESTAS]/, 'server type';
+like $welcome, qr/welcome to yars/i, "got welcome message";
 
 my $status = $yc->status;
 ok $status->{server_version}, 'server status';
