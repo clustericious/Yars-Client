@@ -6,7 +6,7 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.88
+version 0.89
 
 =head1 SYNOPSIS
 
