@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - removed RESTAS support (bduggan, gh#1)
 
 0.88      2013-07-18 09:25:49 America/New_York
   - promote to production
