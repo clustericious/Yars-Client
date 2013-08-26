@@ -12,25 +12,31 @@ version 0.89
 
  my $r = Yars::Client->new;
 
- # Put a file.
+ # Send and retrieve content.
+ my $location = $y->send(content => 'hello, world') or die $y->errorstring;
+ say $y->retrieve(location => $location);
+
+ # Alternatively, use names and md5s explicitly.
+ my $location = $y->send(content => 'hello there', name => "greeting");
+ my $md5 = $y->res_md5;
+ say $y->retrieve(filename => 'greeting', md5 => $md5);
+
+ # Upload a file.
  $r->upload($filename) or die $r->errorstring;
  print $r->res->headers->location;
 
- # Write a file to disk.
+ # Download a file.
  $r->download($filename, $md5) or die $r->errorstring;
  $r->download($filename, $md5, '/tmp');   # download it to the /tmp directory
  $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
 
- # Get the content of a file.
+ # More concise version of retrieve.
  my $content = $r->get($filename,$md5);
-
- # Put some content to a filename.
- my $content = $r->put($filename,$content);
 
  # Delete a file.
  $r->remove($filename, $md5) or die $r->errorstring;
 
- # Find the URL of a file.
+ # Compute the URL of a file based on the md5 and the buckets.
  print $r->location($filename, $md5);
 
  print "Server version is ".$r->status->{server_version};
