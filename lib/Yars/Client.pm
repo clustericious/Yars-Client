@@ -1,7 +1,7 @@
 package Yars::Client;
 
 # ABSTRACT: Yet Another RESTful-Archive Service Client
-our $VERSION = '0.89'; # VERSION
+our $VERSION = '0.90'; # VERSION
 
 use strict;
 use warnings;
@@ -53,6 +53,17 @@ route_meta 'upload'         => { dont_read_files => 1 };
 route_meta 'download'       => { dont_read_files => 1 };
 route_meta 'check_manifest' => { dont_read_files => 1 };
 route_meta 'check'          => { dont_read_files => 1 };
+
+route_args send => [
+    { name => 'content',  type => '=s', required => 1 },
+    { name => 'name',     type => '=s' },
+];
+
+route_args retrieve => [
+    { name => 'location', type => '=s' },
+    { name => 'name',     type => '=s' },
+    { name => 'md5',      type => '=s' },
+];
 
 sub new {
     my $self = shift->SUPER::new(@_);
@@ -338,6 +349,52 @@ sub upload {
     return 'ok';
 }
 
+sub _rand_filename {
+    my $a = '';
+    $a .= ('a'..'z','A'..'Z',0..9)[rand 62] for 1..43;
+    return $a;
+}
+
+sub send {
+    my $self = shift;
+    my %args = $self->meta_for->process_args(@_);
+    my $content = $args{content};
+    my $filename = $args{name} || $self->_rand_filename;
+    my $status = $self->put($filename, $content);
+    return unless $status eq 'ok';
+    return $self->res->headers->location;
+}
+
+sub retrieve {
+    my $self = shift;
+    my %args = $self->meta_for->process_args(@_);
+    if (my $location = $args{location}) {
+        my $tx = $self->client->get($location);
+        my $res = $tx->success or do {
+            $self->tx($tx);
+            $self->res($tx->res);
+            return;
+        };
+        return $res->body;
+    }
+    my $md5 = $args{md5} or LOGDIE "need md5 or location to retrieve";
+    my $name = $args{name} or LOGDIE "need name or location to retrieve";
+    return $self->get($md5,$name);
+}
+
+sub res_md5 {
+    my $self = shift;
+    my $res = $self->res or return;
+    if (my $b64 = $res->headers->header("Content-MD5")) {
+        return _b642hex($b64);
+    }
+    if (my $location = $res->headers->location) {
+        my ($md5) = $location =~ m[/file/([0-9a-f]{32})/];
+        return $md5;
+    }
+    return;
+}
+
 sub check_manifest {
     my $self     = shift;
     my @args     = @_;
@@ -377,31 +434,37 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.89
+version 0.90
 
 =head1 SYNOPSIS
 
  my $r = Yars::Client->new;
 
- # Put a file.
+ # Send and retrieve content.
+ my $location = $y->send(content => 'hello, world') or die $y->errorstring;
+ say $y->retrieve(location => $location);
+
+ # Alternatively, use names and md5s explicitly.
+ my $location = $y->send(content => 'hello there', name => "greeting");
+ my $md5 = $y->res_md5;
+ say $y->retrieve(filename => 'greeting', md5 => $md5);
+
+ # Upload a file.
  $r->upload($filename) or die $r->errorstring;
  print $r->res->headers->location;
 
- # Write a file to disk.
+ # Download a file.
  $r->download($filename, $md5) or die $r->errorstring;
  $r->download($filename, $md5, '/tmp');   # download it to the /tmp directory
  $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
 
- # Get the content of a file.
+ # More concise version of retrieve.
  my $content = $r->get($filename,$md5);
-
- # Put some content to a filename.
- my $content = $r->put($filename,$content);
 
  # Delete a file.
  $r->remove($filename, $md5) or die $r->errorstring;
 
- # Find the URL of a file.
+ # Compute the URL of a file based on the md5 and the buckets.
  print $r->location($filename, $md5);
 
  print "Server version is ".$r->status->{server_version};

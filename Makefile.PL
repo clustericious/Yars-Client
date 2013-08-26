@@ -43,7 +43,7 @@ my %WriteMakefileArgs = (
     "Mojo::URL" => 0,
     "Number::Bytes::Human" => "0.09"
   },
-  "VERSION" => "0.89",
+  "VERSION" => "0.90",
   "test" => {
     "TESTS" => "t/*.t"
   }
