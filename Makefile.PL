@@ -26,9 +26,9 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "NAME" => "Yars::Client",
   "PREREQ_PM" => {
-    "Clustericious::Client" => "0.54",
+    "Clustericious::Client" => "0.82",
     "Clustericious::Client::Command" => 0,
-    "Clustericious::Config" => "0.04",
+    "Clustericious::Config" => "0.25",
     "Clustericious::Log" => 0,
     "Data::Dumper" => 0,
     "Digest::file" => 0,
@@ -43,7 +43,7 @@ my %WriteMakefileArgs = (
     "Mojo::URL" => 0,
     "Number::Bytes::Human" => "0.09"
   },
-  "VERSION" => "0.90",
+  "VERSION" => "0.91",
   "test" => {
     "TESTS" => "t/*.t"
   }

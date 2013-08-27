@@ -21,9 +21,9 @@
       },
       "runtime" : {
          "requires" : {
-            "Clustericious::Client" : "0.54",
+            "Clustericious::Client" : "0.82",
             "Clustericious::Client::Command" : "0",
-            "Clustericious::Config" : "0.04",
+            "Clustericious::Config" : "0.25",
             "Clustericious::Log" : "0",
             "Data::Dumper" : "0",
             "Digest::file" : "0",
@@ -60,6 +60,6 @@
          "web" : "https://github.com/plicease/yars-client"
       }
    },
-   "version" : "0.90"
+   "version" : "0.91"
 }
 

@@ -1,5 +1,9 @@
 Revision history for Yars-Client
 
+0.91      2013-08-27 07:11:28 America/New_York
+  - require newer version of Clustericious::Client
+    needed for 'route_args' directive.
+
 0.90      2013-08-26 13:29:35 America/New_York
   - added methods send, retrieve, and res_md5
 
