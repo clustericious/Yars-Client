@@ -68,14 +68,7 @@ route_args retrieve => [
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
-    eval {
-        # Mojo <  4.0
-        Mojo::IOLoop::Stream->timeout(600);
-        1;
-    } || do {
-        # Mojo >= 4.0
-        $self->client->connect_timeout(30);
-    };
+    $self->client->connect_timeout(30);
     return $self;
 }
 
