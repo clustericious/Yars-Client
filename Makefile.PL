@@ -41,9 +41,10 @@ my %WriteMakefileArgs = (
     "Mojo::Base" => 0,
     "Mojo::ByteStream" => 0,
     "Mojo::URL" => 0,
+    "Mojolicious" => "4.00",
     "Number::Bytes::Human" => "0.09"
   },
-  "VERSION" => "0.91",
+  "VERSION" => "0.92",
   "test" => {
     "TESTS" => "t/*.t"
   }

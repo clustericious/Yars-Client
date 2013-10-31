@@ -1,7 +1,7 @@
 package Yars::Client;
 
 # ABSTRACT: Yet Another RESTful-Archive Service Client
-our $VERSION = '0.91'; # VERSION
+our $VERSION = '0.92'; # VERSION
 
 use strict;
 use warnings;
@@ -68,14 +68,7 @@ route_args retrieve => [
 sub new {
     my $self = shift->SUPER::new(@_);
     $self->client->max_redirects(30);
-    eval {
-        # Mojo <  4.0
-        Mojo::IOLoop::Stream->timeout(600);
-        1;
-    } || do {
-        # Mojo >= 4.0
-        $self->client->connect_timeout(30);
-    };
+    $self->client->connect_timeout(30);
     return $self;
 }
 
@@ -434,7 +427,7 @@ Yars::Client - Yet Another RESTful-Archive Service Client
 
 =head1 VERSION
 
-version 0.91
+version 0.92
 
 =head1 SYNOPSIS
 

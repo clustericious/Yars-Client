@@ -31,10 +31,11 @@ requires:
   Mojo::Base: 0
   Mojo::ByteStream: 0
   Mojo::URL: 0
+  Mojolicious: 4.00
   Number::Bytes::Human: 0.09
   perl: v5.10.0
 resources:
   bugtracker: https://github.com/plicease/yars-client/issues
   homepage: http://perl.wdlabs.com/Yars-Client/
   repository: git://github.com/plicease/yars-client.git
-version: 0.91
+version: 0.92
