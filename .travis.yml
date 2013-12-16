@@ -1,6 +1,8 @@
 language: perl
 
 install:
+  - cpanm -n Dist::Zilla
+  - dzil authordeps --missing | cpanm -n
   - cpanm -n YAML
   - cpanm -n Clustericious::Config
   - cpanm -n Clustericious::Log
@@ -11,12 +13,13 @@ install:
   - cpanm -n Log::Log4perl::CommandLine
   - cpanm -n Number::Bytes::Human
   - cpanm -n Yars
+  - cpanm -n Test::CPAN::Changes Test::EOL Test::Fixme Test::NoTabs Test::Pod::Spelling::CommonMistakes Test::Spelling Test::Strict Test::Version || true
 
 before_script:
   - perl util/travis.pl
   - yars start
 
-script: HARNESS_IS_VERBOSE=1 YC_LIVE_TESTS=1 prove -lv t
+script: YC_LIVE_TESTS=1 dzil test -v
 
 after_script:
   - yars stop
