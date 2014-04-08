@@ -1,13 +1,84 @@
+NAME
 
+    Yars::Client - Yet Another RESTful-Archive Service Client
 
-This archive contains the distribution Yars-Client,
-version 0.93:
+VERSION
 
-  Yet Another RESTful-Archive Service Client
+    version 0.94
 
-This software is copyright (c) 2013 by NASA GSFC.
+SYNOPSIS
 
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
+     my $r = Yars::Client->new;
+    
+     # Send and retrieve content.
+     my $location = $y->send(content => 'hello, world') or die $y->errorstring;
+     say $y->retrieve(location => $location);
+    
+     # Alternatively, use names and md5s explicitly.
+     my $location = $y->send(content => 'hello there', name => "greeting");
+     my $md5 = $y->res_md5;
+     say $y->retrieve(filename => 'greeting', md5 => $md5);
+    
+     # Upload a file.
+     $r->upload($filename) or die $r->errorstring;
+     print $r->res->headers->location;
+    
+     # Download a file.
+     $r->download($filename, $md5) or die $r->errorstring;
+     $r->download($filename, $md5, '/tmp');   # download it to the /tmp directory
+     $r->download("http://yars/0123456890abc/filename.txt"); # Write filename.txt to current directory.
+    
+     # More concise version of retrieve.
+     my $content = $r->get($filename,$md5);
+    
+     # Delete a file.
+     $r->remove($filename, $md5) or die $r->errorstring;
+    
+     # Compute the URL of a file based on the md5 and the buckets.
+     print $r->location($filename, $md5);
+    
+     print "Server version is ".$r->status->{server_version};
+     my $usage = $r->disk_usage();      # Returns usage for a single server.
+     my $nother_usage = Yars::Client->new(url => "http://host1:9999")->disk_usage();
+     my $status = $r->servers_status(); # return a hash of servers, disks, and their statuses
+    
+     # Mark a disk down.
+     my $ok = $r->set_status({ root => "/acps/disk/one", state => "down" });
+     my $ok = $r->set_status({ root => "/acps/disk/one", state => "down", host => "http://host2" });
+    
+     # Mark a disk up.
+     my $ok = $r->set_status({ root => "/acps/disk/one", state => "up" });
+    
+     # Check a manifest file or list of files.
+     my $details = $r->check_manifest( $filename );
+     my $check = $r->check_manifest( "-c", $filename );
+     my $check = $r->check_manifest( "--show_corrupt" => 1, $filename );
+     my $ck = $r->check_files({ files => [
+         { filename => $f1, md5 => $m1 },
+         { filename => $f2, md5 => $m2 } ] });
 
+DESCRIPTION
+
+    Client for Yars.
+
+SEE ALSO
+
+    yarsclient, Clustericious::Client
+
+AUTHOR
+
+    original author: Marty Brandon
+
+    current maintainer: Graham Ollis <plicease@cpan.org>
+
+    contributors:
+
+    Brian Duggan
+
+COPYRIGHT AND LICENSE
+
+    This software is copyright (c) 2013 by NASA GSFC.
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
 

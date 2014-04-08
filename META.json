@@ -4,7 +4,7 @@
       "Graham Ollis <plicease@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.300021, CPAN::Meta::Converter version 2.120921",
+   "generated_by" : "Dist::Zilla version 5.006, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -38,6 +38,7 @@
             "Mojo::URL" : "0",
             "Mojolicious" : "4.00",
             "Number::Bytes::Human" : "0.09",
+            "lib" : "0",
             "perl" : "v5.10.0"
          }
       },
@@ -61,6 +62,6 @@
          "web" : "https://github.com/plicease/yars-client"
       }
    },
-   "version" : "0.93"
+   "version" : "0.94"
 }
 

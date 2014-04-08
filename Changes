@@ -1,5 +1,8 @@
 Revision history for Yars-Client
 
+0.94      2014-04-08 15:10:38 America/New_York
+  - public release equivalent to 0.93
+
 0.93      2013-10-31 14:19:58 America/New_York
   - remove legacy Mojolicious 3.x support
 
