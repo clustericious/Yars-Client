@@ -3,6 +3,14 @@ package Yars::Client;
 # ABSTRACT: Yet Another RESTful-Archive Service Client
 # VERSION
 
+=head1 MOVED
+
+This is the old version of L<Yars::Client> from before it was merged
+back into core L<Yars>.  Please see the L<Yars> main repository
+here: L<https://github.com/clustericious/Yars>.
+
+=cut
+
 use strict;
 use warnings;
 

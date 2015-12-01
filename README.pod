@@ -1,5 +1,7 @@
 =pod
 
+=encoding UTF-8
+
 =head1 NAME
 
 Yars::Client - Yet Another RESTful-Archive Service Client
@@ -63,17 +65,23 @@ version 0.94
 
 Client for L<Yars>.
 
+=head1 MOVED
+
+This is the old version of L<Yars::Client> from before it was merged
+back into core L<Yars>.  Please see the L<Yars> main repository
+here: L<https://github.com/clustericious/Yars>.
+
 =head1 SEE ALSO
 
 L<yarsclient>, L<Clustericious::Client>
 
 =head1 AUTHOR
 
-original author: Marty Brandon
+Original author: Marty Brandon
 
-current maintainer: Graham Ollis <plicease@cpan.org>
+Current maintainer: Graham Ollis E<lt>plicease@cpan.orgE<gt>
 
-contributors:
+Contributors:
 
 Brian Duggan
 
